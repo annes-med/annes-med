@@ -6,4 +6,6 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
   ffmpeg melt sox mediainfo imagemagick mkvtoolnix gpac handbrake-cli \
   frei0r-plugins x264 x265 libavcodec-extra fonts-noto-core fonts-dejavu
 pip install -q moviepy opencv-python-headless pydub audioop-lts ffmpeg-python \
-  scenedetect yt-dlp imageio-ffmpeg "pillow>=12.2"
+  scenedetect yt-dlp imageio-ffmpeg
+# moviepy pins pillow<12 but works with newer; keep newer pillow for other libs
+pip install -q --no-deps "pillow>=12.2"

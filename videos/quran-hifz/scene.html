@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#04221c}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 42%,#0d4a3c 0%,#062e25 45%,#03140f 100%)}
+  svg{position:absolute;inset:0}
+  .t{position:absolute;left:0;right:0;text-align:center;color:#f3e3b3;will-change:transform,opacity}
+  .amiri{font-family:'Amiri','Amiri Quran',serif}
+  .kufi{font-family:'Noto Kufi Arabic',sans-serif}
+  .gold{background:linear-gradient(180deg,#fff2c4 0%,#e8c46a 45%,#b8862b 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .glow{filter:drop-shadow(0 0 18px rgba(232,196,106,.45))}
+  .step{position:absolute;width:260px;height:260px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    border:4px solid #e8c46a;background:rgba(232,196,106,.08);color:#f3e3b3}
+  .step b{font-family:'Noto Kufi Arabic';font-size:64px;font-weight:700;line-height:1.2}
+  .step span{font-family:'Noto Kufi Arabic';font-size:30px;opacity:.75}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="bg" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+  <svg id="fx" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+
+  <!-- Scene 1: title -->
+  <div id="s1a" class="t kufi" style="top:1330px;font-size:44px;letter-spacing:2px;color:#cfe8dc">رحلة نور تبدأ بآية</div>
+  <div id="s1b" class="t amiri gold glow" style="top:1110px;font-size:150px;font-weight:700;line-height:1.2">حفظ القرآن</div>
+  <div id="s1c" class="t amiri" style="top:1170px;font-size:0"></div>
+
+  <!-- Scene 2: hadith -->
+  <div id="s2a" class="t amiri gold glow" style="top:1150px;font-size:96px;font-weight:700;line-height:1.35;padding:0 60px">«خيرُكم من تعلَّم القرآنَ<br>وعلَّمه»</div>
+  <div id="s2b" class="t kufi" style="top:1440px;font-size:38px;color:#cfe8dc">رواه البخاري</div>
+
+  <!-- Scene 3: steps -->
+  <div id="s3h" class="t kufi" style="top:420px;font-size:58px;font-weight:700;color:#f3e3b3">ثلاث خطوات للحفظ</div>
+  <div id="st1" class="step" style="left:410px;top:620px"><b>اقرأ</b><span>بتدبّر</span></div>
+  <div id="st2" class="step" style="left:410px;top:940px"><b>كرّر</b><span>كل يوم</span></div>
+  <div id="st3" class="step" style="left:410px;top:1260px"><b>راجِع</b><span>بانتظام</span></div>
+
+  <!-- Scene 4: CTA -->
+  <div id="s4a" class="t amiri gold glow" style="top:780px;font-size:130px;font-weight:700;line-height:1.3">ابدأ رحلتك<br>اليوم</div>
+  <div id="s4b" class="t kufi" style="top:1150px;font-size:44px;color:#cfe8dc">آيةً بعد آية… حتى تحفظه كاملًا</div>
+</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg', W=1080, H=1920;
+const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);parent&&parent.appendChild(e);return e};
+const $=id=>document.getElementById(id);
+
+// ---------- easing / helpers ----------
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3);
+const eInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c=1.70158,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+// visible window with fade-in / fade-out
+const win=(t,a,b,fi=.45,fo=.4)=>Math.min(eOut(prog(t,a,a+fi)),1-eInOut(prog(t,b-fo,b)));
+
+// ---------- 8-point star (rub el hizb) path ----------
+function starPath(cx,cy,r){
+  const pts=[];
+  for(let i=0;i<16;i++){const a=i*Math.PI/8-Math.PI/2;const rr=i%2?r*0.78:r;pts.push([cx+rr*Math.cos(a),cy+rr*Math.sin(a)])}
+  return 'M'+pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join('L')+'Z';
+}
+function rubPath(cx,cy,r){ // two overlapping squares
+  const sq=(rot)=>{const p=[];for(let i=0;i<4;i++){const a=rot+i*Math.PI/2;p.push([cx+r*Math.cos(a),cy+r*Math.sin(a)])}return 'M'+p.map(q=>q.map(v=>v.toFixed(1)).join(',')).join('L')+'Z'};
+  return sq(0)+sq(Math.PI/4);
+}
+
+// ---------- background: tiled geometric pattern ----------
+const bg=$('bg');
+const defs=el('defs',{},bg);
+const rg=el('radialGradient',{id:'vig',cx:'50%',cy:'45%',r:'65%'},defs);
+el('stop',{offset:'55%','stop-color':'#000','stop-opacity':0},rg);
+el('stop',{offset:'100%','stop-color':'#000','stop-opacity':.6},rg);
+const lg=el('linearGradient',{id:'goldg',x1:0,y1:0,x2:0,y2:1},defs);
+el('stop',{offset:'0','stop-color':'#fff2c4'},lg);el('stop',{offset:'.5','stop-color':'#e8c46a'},lg);el('stop',{offset:'1','stop-color':'#b8862b'},lg);
+const rl=el('radialGradient',{id:'light'},defs);
+el('stop',{offset:'0','stop-color':'#fff6d6','stop-opacity':.9},rl);
+el('stop',{offset:'.35','stop-color':'#e8c46a','stop-opacity':.35},rl);
+el('stop',{offset:'1','stop-color':'#e8c46a','stop-opacity':0},rl);
+
+const tile=el('g',{opacity:.0},bg);
+const tiles=[];
+const S=180;
+for(let y=-1;y<=Math.ceil(H/S)+1;y++)for(let x=-1;x<=Math.ceil(W/S)+1;x++){
+  const cx=x*S+(y%2?S/2:0), cy=y*S*0.9;
+  const p=el('path',{d:rubPath(cx,cy,S*0.36),fill:'none',stroke:'#e8c46a','stroke-width':1.6},tile);
+  tiles.push({p,cx,cy,d:Math.hypot(cx-W/2,cy-H*0.42)});
+}
+el('rect',{x:0,y:0,width:W,height:H,fill:'url(#vig)'},bg);
+
+// ---------- fx layer ----------
+const fx=$('fx');
+const halo=el('circle',{cx:540,cy:760,r:420,fill:'url(#light)',opacity:0},fx);
+// central emblem: rotating star + rings
+const emb=el('g',{},fx);
+const ring1=el('circle',{cx:540,cy:760,r:300,fill:'none',stroke:'url(#goldg)','stroke-width':3},emb);
+const ring2=el('circle',{cx:540,cy:760,r:268,fill:'none',stroke:'#e8c46a','stroke-width':1.2,'stroke-dasharray':'4 10',opacity:.7},emb);
+const star=el('path',{d:rubPath(540,760,230),fill:'rgba(232,196,106,.07)',stroke:'url(#goldg)','stroke-width':5,'stroke-linejoin':'round'},emb);
+const star2=el('path',{d:starPath(540,760,120),fill:'none',stroke:'#f3e3b3','stroke-width':2.5},emb);
+
+// open book (mushaf) drawn with strokes, for scene 2
+const book=el('g',{opacity:0},fx);
+const bookPaths=[
+ 'M540,980 C470,930 360,920 250,940 L250,700 C360,680 470,690 540,740 Z',
+ 'M540,980 C610,930 720,920 830,940 L830,700 C720,680 610,690 540,740 Z',
+ 'M540,740 L540,980',
+ 'M230,955 C360,935 470,945 540,1000 C610,945 720,935 850,955'
+];
+const bp=bookPaths.map(d=>el('path',{d,fill:'none',stroke:'url(#goldg)','stroke-width':6,'stroke-linejoin':'round','stroke-linecap':'round'},book));
+// text lines on pages
+const lines=[];
+for(let i=0;i<5;i++){
+  const y=760+i*36;
+  lines.push(el('path',{d:`M${290} ${y+ (i*-2)} Q400 ${y-10} 505 ${y+12}`,fill:'none',stroke:'#f3e3b3','stroke-width':3,'stroke-linecap':'round',opacity:.7},book));
+  lines.push(el('path',{d:`M${790} ${y+ (i*-2)} Q680 ${y-10} 575 ${y+12}`,fill:'none',stroke:'#f3e3b3','stroke-width':3,'stroke-linecap':'round',opacity:.7},book));
+}
+[...bp,...lines].forEach(p=>{const L=p.getTotalLength();p.dataset.len=L;p.style.strokeDasharray=L});
+
+// progress ring for scene 3 (connecting the steps)
+const conn=el('path',{d:'M540,880 L540,940 M540,1200 L540,1260',stroke:'#e8c46a','stroke-width':4,'stroke-dasharray':'2 12','stroke-linecap':'round',opacity:0},fx);
+
+// floating light particles
+const parts=[];
+let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+for(let i=0;i<70;i++){
+  parts.push({x:rnd()*W,y:rnd()*H,r:1.5+rnd()*4,s:20+rnd()*70,ph:rnd()*6.28,
+    c:el('circle',{r:1,fill:'#ffe9a8'},fx)});
+}
+// light burst rays for scene 4
+const rays=el('g',{opacity:0},fx);
+for(let i=0;i<24;i++){
+  const a=i*Math.PI/12;
+  el('path',{d:`M540,960 L${540+1400*Math.cos(a-0.035)},${960+1400*Math.sin(a-0.035)} L${540+1400*Math.cos(a+0.035)},${960+1400*Math.sin(a+0.035)} Z`,fill:'#e8c46a',opacity:.07},rays);
+}
+fx.insertBefore(rays,fx.firstChild);
+
+const steps=[$('st1'),$('st2'),$('st3')];
+
+// ---------- master render(t) ----------
+function set(e,o,ty=0,sc=1,blur=0){
+  e.style.opacity=o.toFixed(3);
+  e.style.transform=`translateY(${ty.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+  e.style.filter=blur>0.05?`blur(${blur.toFixed(1)}px)`:(e.classList.contains('glow')?'drop-shadow(0 4px 10px rgba(0,0,0,.75)) drop-shadow(0 0 18px rgba(232,196,106,.45))':'none');
+}
+function dash(p,k){const L=+p.dataset.len;p.style.strokeDashoffset=(L*(1-k)).toFixed(1)}
+
+window.render=function(t){
+  // background pattern ripples out from center then breathes
+  tile.setAttribute('opacity',(0.13*eOut(prog(t,0,1.2))*(1-0.5*prog(t,9.4,10))).toFixed(3));
+  for(const q of tiles){
+    const k=eOut(prog(t,q.d/1400*0.9,q.d/1400*0.9+0.6));
+    const pulse=1+0.04*Math.sin(t*2-q.d/160);
+    q.p.setAttribute('transform',`translate(${q.cx},${q.cy}) scale(${(k*pulse).toFixed(3)}) translate(${-q.cx},${-q.cy})`);
+  }
+
+  // emblem: in during scene 1, moves up and shrinks, out by scene 2
+  const e1=eBack(prog(t,0.1,1.1));
+  const eOutK=eInOut(prog(t,2.4,3.0));
+  const rot=t*14+ (1-eOut(prog(t,0,1.4)))*-120;
+  const sc=Math.max(0.0001,e1*(1-eOutK*0.6));
+  emb.setAttribute('transform',`translate(540,${760-eOutK*120}) rotate(${rot.toFixed(2)}) scale(${sc.toFixed(3)}) translate(-540,-760)`);
+  emb.setAttribute('opacity',(clamp(e1)*(1-eOutK)).toFixed(3));
+  star2.setAttribute('transform',`rotate(${(-t*40).toFixed(2)} 540 760)`);
+  ring2.setAttribute('transform',`rotate(${(t*-25).toFixed(2)} 540 760)`);
+
+  // halo: present throughout with scene accents
+  const hk=0.55*eOut(prog(t,0.3,1.4))+0.35*Math.max(0,1-Math.abs(t-3.2)/0.5)+0.22*eOut(prog(t,8.4,9.0));
+  halo.setAttribute('opacity',clamp(hk*(1-0.6*prog(t,9.6,10))).toFixed(3));
+  const hy=t<8.4?760:760+200*eInOut(prog(t,8.4,9.0));
+  halo.setAttribute('cy',hy.toFixed(1));
+  halo.setAttribute('r',(420+40*Math.sin(t*1.6)+eOut(prog(t,8.4,9.2))*260).toFixed(1));
+
+  // scene 1 text (0.6 - 2.8)
+  const w1=win(t,0.7,2.8,0.6,0.35);
+  set($('s1b'),w1,(1-eOut(prog(t,0.7,1.4)))*60,0.92+0.08*eOut(prog(t,0.7,1.4)),(1-eOut(prog(t,0.7,1.2)))*14);
+  const w1a=win(t,1.15,2.8,0.5,0.35);
+  set($('s1a'),w1a,(1-eOut(prog(t,1.15,1.7)))*30);
+
+  // scene 2: book draws + hadith (2.8 - 5.6)
+  const bIn=prog(t,2.8,3.9), bOut=win(t,2.8,5.6,0.2,0.4);
+  book.setAttribute('opacity',bOut.toFixed(3));
+  bp.forEach((p,i)=>dash(p,eInOut(prog(t,2.8+i*0.12,3.6+i*0.12))));
+  lines.forEach((p,i)=>dash(p,eOut(prog(t,3.4+i*0.04,3.9+i*0.04))));
+  book.setAttribute('transform',`translate(0,${(-30+30*Math.sin((t-2.8)*1.4)).toFixed(1)})`);
+  const w2=win(t,3.5,5.6,0.6,0.4);
+  set($('s2a'),w2,(1-eOut(prog(t,3.5,4.2)))*50,0.95+0.05*eOut(prog(t,3.5,4.2)),(1-eOut(prog(t,3.5,4.0)))*12);
+  set($('s2b'),win(t,4.0,5.6,0.5,0.4),(1-eOut(prog(t,4.0,4.5)))*20);
+
+  // scene 3: three steps (5.6 - 8.5)
+  set($('s3h'),win(t,5.6,8.4,0.5,0.4),(1-eOut(prog(t,5.6,6.1)))*-30);
+  steps.forEach((s,i)=>{
+    const a=5.9+i*0.45;
+    const k=eBack(prog(t,a,a+0.55));
+    const o=win(t,a,8.4,0.3,0.4);
+    const active=Math.max(0,1-Math.abs(t-(a+0.6))/0.5);
+    s.style.opacity=o.toFixed(3);
+    s.style.transform=`scale(${Math.max(0.001,k*(1+0.06*active)).toFixed(3)})`;
+    s.style.background=`rgba(232,196,106,${(0.08+0.22*active).toFixed(3)})`;
+    s.style.boxShadow=`0 0 ${(20+60*active).toFixed(0)}px rgba(232,196,106,${(0.15+0.45*active).toFixed(2)})`;
+  });
+  conn.setAttribute('opacity',(win(t,6.4,8.4,0.4,0.4)*0.8).toFixed(3));
+  conn.setAttribute('stroke-dashoffset',(-t*40).toFixed(1));
+
+  // scene 4: rays + CTA (8.4 - 10)
+  rays.setAttribute('opacity',(eOut(prog(t,8.4,9.0))).toFixed(3));
+  rays.setAttribute('transform',`rotate(${(t*8).toFixed(2)} 540 960)`);
+  set($('s4a'),eOut(prog(t,8.55,9.1)),(1-eOut(prog(t,8.55,9.2)))*60,0.9+0.1*eBack(prog(t,8.55,9.2)),(1-eOut(prog(t,8.55,9.0)))*14);
+  set($('s4b'),eOut(prog(t,8.9,9.4)),(1-eOut(prog(t,8.9,9.4)))*25);
+
+  // particles drift upward and twinkle
+  for(const p of parts){
+    const y=((p.y-t*p.s)%H+H)%H;
+    const x=p.x+12*Math.sin(t*0.8+p.ph);
+    p.c.setAttribute('cx',x.toFixed(1));p.c.setAttribute('cy',y.toFixed(1));
+    p.c.setAttribute('r',p.r.toFixed(1));
+    p.c.setAttribute('opacity',(0.25+0.45*(0.5+0.5*Math.sin(t*3+p.ph))).toFixed(2)*eOut(prog(t,0,0.8)));
+  }
+
+  // global fade in/out
+  $('stage').style.opacity=(eOut(prog(t,0,0.3))*(1-prog(t,9.75,10))).toFixed(3);
+};
+render(0);
+</script>
+</body>
+</html>

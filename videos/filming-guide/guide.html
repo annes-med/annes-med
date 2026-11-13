@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#0b1d18}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:linear-gradient(180deg,#0e2a23 0%,#0b1f1a 60%,#08160f 100%)}
+  svg{position:absolute;inset:0}
+  .t{position:absolute;left:60px;right:60px;text-align:center;color:#f3e3b3}
+  .kufi{font-family:'Noto Kufi Arabic',sans-serif}
+  .naskh{font-family:'Noto Naskh Arabic',serif}
+  #badge{position:absolute;top:120px;left:50%;margin-left:-60px;width:120px;height:120px;border-radius:50%;
+    background:#e8c46a;color:#0b1d18;font:700 64px 'Noto Kufi Arabic';display:flex;align-items:center;justify-content:center}
+  #title{top:260px;font-size:66px;font-weight:700}
+  #sub{top:365px;font-size:38px;color:#bfe0d2}
+  #tip{top:1755px;font-size:40px;font-weight:700;color:#0b1d18;background:#e8c46a;border-radius:24px;padding:18px 20px;left:90px;right:90px}
+  #plabel{top:1150px;font-size:30px;color:#bfe0d2;left:0;right:0}
+  .big{position:absolute;left:0;right:0;text-align:center}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg id="g" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+  <div id="badge">1</div>
+  <div id="title" class="t kufi"></div>
+  <div id="sub" class="t naskh"></div>
+  <div id="plabel" class="t kufi">📱 ما تراه الكاميرا</div>
+  <div id="tip" class="t kufi"></div>
+  <div id="intro" class="big" style="top:640px">
+    <div class="kufi" style="font-size:56px;color:#bfe0d2">شرح بالرسوم</div>
+    <div class="naskh" style="font-size:104px;font-weight:700;color:#e8c46a;line-height:1.35;margin-top:20px">كيف تصوّر<br>إعلان كتابك؟</div>
+    <div class="kufi" style="font-size:44px;color:#f3e3b3;margin-top:40px">بالهاتف فقط · خطوة بخطوة</div>
+  </div>
+  <div id="outro" class="big" style="top:620px">
+    <div class="naskh" style="font-size:96px;font-weight:700;color:#e8c46a;line-height:1.4">صوّر كل لقطة<br>3 مرات</div>
+    <div class="kufi" style="font-size:48px;color:#f3e3b3;margin-top:50px;line-height:1.7">5 إلى 8 ثوانٍ لكل لقطة<br>ثم أرسلها للمونتاج ✂️</div>
+  </div>
+</div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||G).appendChild(e);return e};
+const $=id=>document.getElementById(id);
+const G=$('g');
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3), eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const lerp=(a,b,k)=>a+(b-a)*k;
+const GOLD='#e8c46a',CREAM='#f3e3b3',GREEN='#0f5a48',SKIN='#d9a77c',SHIRT='#2f6f8f',WOOD='#7a5230';
+
+/* ---------------- SCENES ---------------- */
+// each: [start, end, badge, title, sub, tip, config]
+const S=[
+ [0,3.2,'', '', '', '', {kind:'intro'}],
+ [3.2,7.6,'1','جهّز الهاتف','عموديًا · 1080p · 30 إطار/ث','نظّف العدسة قبل كل تصوير',{kind:'setup'}],
+ [7.6,12,'2','الإضاءة','النافذة على جانب الكتاب — ليس خلفه','✓ ضوء جانبي    ✗ ضوء من الخلف',{kind:'light'}],
+ [12,16.4,'3','لقطة الخطّاف (0–3 ث)','يقرأ… يحاول التذكّر… يتوقف','الهاتف على حامل بمستوى الوجه',{kind:'hook',cam:[230,690],aim:[820,640],person:'read'}],
+ [16.4,20.8,'4','وضع الكتاب على الطاولة','يد تضع الكتاب بهدوء','الكاميرا أعلى قليلًا من الطاولة',{kind:'place',cam:[230,780],aim:[540,880],person:'place'}],
+ [20.8,25.2,'5','لقطة الغلاف','حرّك الهاتف ببطء نحو الكتاب','حركة بطيئة جدًا ← لا اهتزاز',{kind:'cover',cam:[200,800],cam2:[390,830],aim:[540,840],person:'none'}],
+ [25.2,29.6,'6','تقليب الصفحات','الهاتف فوق الطاولة موازيًا لها','صوّر من الأعلى مباشرة',{kind:'flip',cam:[540,560],aim:[540,895],person:'flip'}],
+ [29.6,34,'7','الكتابة في الجدول','يد تضع علامة ✓ داخل الكتاب','ثبّت التركيز: اضغط مطوّلًا على الشاشة',{kind:'write',cam:[560,620],aim:[540,895],person:'write'}],
+ [34,38.4,'8','اطلب الآن','يد تقدّم الكتاب نحو الكاميرا','خلفية نظيفة بلا أغراض',{kind:'cta',cam:[230,720],aim:[640,720],person:'cta'}],
+ [38.4,42,'', '', '', '', {kind:'outro'}],
+];
+const DUR=42;
+
+/* ---------------- DIAGRAM (side view) ---------------- */
+const defs=el('defs',{});
+const lg=el('linearGradient',{id:'ray',x1:0,y1:0,x2:1,y2:0},defs);
+el('stop',{offset:0,'stop-color':'#fff3c4','stop-opacity':.55},lg);el('stop',{offset:1,'stop-color':'#fff3c4','stop-opacity':0},lg);
+const cg=el('linearGradient',{id:'cone'},defs);
+el('stop',{offset:0,'stop-color':GOLD,'stop-opacity':.55},cg);el('stop',{offset:1,'stop-color':GOLD,'stop-opacity':.08},cg);
+const clip=el('clipPath',{id:'scr'},defs);el('rect',{x:410,y:1240,width:260,height:440,rx:22},clip);
+
+const D=el('g',{});
+// room
+el('rect',{x:40,y:470,width:1000,height:680,rx:30,fill:'#12332b',stroke:'#1d4a3e','stroke-width':3},D);
+el('line',{x1:40,y1:1100,x2:1040,y2:1100,stroke:'#2b5c4f','stroke-width':4},D);
+// window
+const win=el('g',{},D);
+el('rect',{x:70,y:540,width:90,height:300,fill:'#cfe9ff',opacity:.9},win);
+el('rect',{x:70,y:540,width:90,height:300,fill:'none',stroke:'#f3e3b3','stroke-width':6},win);
+el('line',{x1:115,y1:540,x2:115,y2:840,stroke:'#f3e3b3','stroke-width':4},win);
+el('line',{x1:70,y1:690,x2:160,y2:690,stroke:'#f3e3b3','stroke-width':4},win);
+const rays=el('polygon',{points:'160,545 160,835 640,905 640,860',fill:'url(#ray)',opacity:0},D);
+// back light (wrong) indicator
+const backLamp=el('g',{opacity:0},D);
+el('circle',{cx:960,cy:600,r:40,fill:'#fff3c4'},backLamp);
+for(let i=0;i<8;i++){const a=i*Math.PI/4;el('line',{x1:960+52*Math.cos(a),y1:600+52*Math.sin(a),x2:960+75*Math.cos(a),y2:600+75*Math.sin(a),stroke:'#fff3c4','stroke-width':6,'stroke-linecap':'round'},backLamp)}
+// table
+el('rect',{x:300,y:900,width:480,height:22,rx:6,fill:WOOD},D);
+el('rect',{x:320,y:922,width:18,height:178,fill:'#5d3d22'},D);el('rect',{x:742,y:922,width:18,height:178,fill:'#5d3d22'},D);
+// book on table (group transform)
+const book=el('g',{},D);
+const bookBody=el('rect',{x:-60,y:-18,width:120,height:18,rx:3,fill:GREEN,stroke:GOLD,'stroke-width':3},book);
+// person (side view, facing left)
+const P=el('g',{},D);
+el('rect',{x:850,y:900,width:90,height:16,rx:6,fill:'#3d2a1a'},P);           // chair seat
+el('rect',{x:925,y:740,width:16,height:176,rx:6,fill:'#3d2a1a'},P);          // chair back
+el('rect',{x:860,y:916,width:14,height:184,fill:'#3d2a1a'},P);
+el('path',{d:'M880,900 L800,905 L800,1095',fill:'none',stroke:'#203a52','stroke-width':34,'stroke-linecap':'round','stroke-linejoin':'round'},P); // legs
+const torso=el('path',{d:'M890,900 C895,840 880,770 860,730',fill:'none',stroke:SHIRT,'stroke-width':70,'stroke-linecap':'round'},P);
+const head=el('g',{},P);
+el('circle',{cx:0,cy:0,r:46,fill:SKIN},head);
+el('path',{d:'M-44,-8 C-40,-56 40,-60 46,-6 C30,-30 -10,-34 -44,-8Z',fill:'#2a1c12'},head);
+el('circle',{cx:-30,cy:-4,r:5,fill:'#2a1c12'},head);
+const arm=el('path',{d:'',fill:'none',stroke:SHIRT,'stroke-width':28,'stroke-linecap':'round','stroke-linejoin':'round'},P);
+const hand=el('circle',{r:16,fill:SKIN},P);
+const held=el('rect',{x:-55,y:-75,width:110,height:150,rx:6,fill:GREEN,stroke:GOLD,'stroke-width':3,opacity:0},P); // book in hand
+const thought=el('g',{opacity:0},P);
+el('circle',{cx:0,cy:0,r:34,fill:'#fff',opacity:.95},thought);
+el('text',{x:0,y:16,'text-anchor':'middle','font-size':48,'font-family':'Noto Kufi Arabic','font-weight':700,fill:'#0b1d18'},thought).textContent='؟';
+// camera rig
+const cone=el('polygon',{points:'',fill:'url(#cone)'},D);
+const tripod=el('g',{},D);
+const legs=[el('line',{stroke:'#c9d6d1','stroke-width':6,'stroke-linecap':'round'},tripod),el('line',{stroke:'#c9d6d1','stroke-width':6,'stroke-linecap':'round'},tripod),el('line',{stroke:'#c9d6d1','stroke-width':6,'stroke-linecap':'round'},tripod)];
+const arm2=el('line',{stroke:'#c9d6d1','stroke-width':6,'stroke-linecap':'round',opacity:0},tripod); // overhead arm
+const phone=el('g',{},D);
+el('rect',{x:-14,y:-42,width:28,height:84,rx:7,fill:'#1a1a1a',stroke:'#e6e6e6','stroke-width':3},phone);
+el('circle',{cx:0,cy:-28,r:5,fill:GOLD},phone);
+const motion=el('path',{d:'',fill:'none',stroke:GOLD,'stroke-width':6,'stroke-dasharray':'14 12','stroke-linecap':'round',opacity:0},D);
+const motionHead=el('polygon',{points:'',fill:GOLD,opacity:0},D);
+
+/* ---------------- SETUP & LIGHT special drawings ---------------- */
+const setupG=el('g',{opacity:0});
+const bigPhone=el('g',{},setupG);
+el('rect',{x:-150,y:-280,width:300,height:560,rx:44,fill:'#151515',stroke:'#e6e6e6','stroke-width':8},bigPhone);
+el('rect',{x:-130,y:-250,width:260,height:500,rx:24,fill:'#12332b'},bigPhone);
+el('circle',{cx:0,cy:-230,r:9,fill:'#333'},bigPhone);
+const bpText=el('text',{x:0,y:20,'text-anchor':'middle','font-size':44,'font-family':'Noto Kufi Arabic','font-weight':700,fill:GOLD},bigPhone);bpText.textContent='1080p · 30';
+const cross=el('g',{opacity:0},setupG);
+el('line',{x1:-120,y1:-120,x2:120,y2:120,stroke:'#ff6b6b','stroke-width':16,'stroke-linecap':'round'},cross);
+el('line',{x1:120,y1:-120,x2:-120,y2:120,stroke:'#ff6b6b','stroke-width':16,'stroke-linecap':'round'},cross);
+const tick=el('path',{d:'M-70,10 L-20,60 L80,-60',fill:'none',stroke:'#7ee2a8','stroke-width':22,'stroke-linecap':'round','stroke-linejoin':'round'},setupG);
+const lens=el('g',{opacity:0},setupG);
+el('circle',{cx:0,cy:0,r:60,fill:'#222',stroke:'#888','stroke-width':6},lens);
+el('circle',{cx:0,cy:0,r:30,fill:'#3a6ea5'},lens);
+const cloth=el('rect',{x:-50,y:-30,width:100,height:60,rx:12,fill:GOLD},lens);
+
+/* ---------------- PREVIEW PHONE ---------------- */
+const PV=el('g',{});
+el('rect',{x:396,y:1226,width:288,height:468,rx:34,fill:'#151515',stroke:'#e6e6e6','stroke-width':5},PV);
+const scr=el('g',{'clip-path':'url(#scr)'},PV);
+const scrBg=el('rect',{x:410,y:1240,width:260,height:440,fill:'#e9dcc0'},scr);
+const pv={}; // preview sub-groups by kind
+['setup','light','hook','place','cover','flip','write','cta'].forEach(k=>pv[k]=el('g',{opacity:0},scr));
+const rec=el('g',{},PV);
+const recDot=el('circle',{cx:438,cy:1268,r:9,fill:'#ff4d4d'},rec);
+const recT=el('text',{x:452,y:1277,'font-size':24,'font-family':'Noto Kufi Arabic',fill:'#fff'},rec);
+// grid (rule of thirds) on screen
+for(const x of [497,583])el('line',{x1:x,y1:1240,x2:x,y2:1680,stroke:'#fff',opacity:.35,'stroke-width':2},PV);
+for(const y of [1387,1533])el('line',{x1:410,y1:y,x2:670,y2:y,stroke:'#fff',opacity:.35,'stroke-width':2},PV);
+
+// preview contents (center 540,1460)
+// setup: horizon & "30fps"
+el('rect',{x:410,y:1240,width:260,height:440,fill:'#12332b'},pv.setup);
+el('text',{x:540,y:1470,'text-anchor':'middle','font-size':40,'font-family':'Noto Kufi Arabic','font-weight':700,fill:GOLD},pv.setup).textContent='9:16';
+// light: split good/bad
+el('rect',{x:410,y:1240,width:260,height:220,fill:'#f2e6c9'},pv.light);
+el('rect',{x:490,y:1290,width:100,height:130,rx:6,fill:GREEN,stroke:GOLD,'stroke-width':3},pv.light);
+el('text',{x:640,y:1290,'font-size':34,fill:'#2e9b5d','font-family':'Noto Kufi Arabic','font-weight':700},pv.light).textContent='✓';
+el('rect',{x:410,y:1460,width:260,height:220,fill:'#fffbe8'},pv.light);
+el('rect',{x:490,y:1510,width:100,height:130,rx:6,fill:'#081a14'},pv.light);
+el('text',{x:640,y:1510,'font-size':34,fill:'#d33','font-family':'Noto Kufi Arabic','font-weight':700},pv.light).textContent='✗';
+// hook: face + mushaf close-up
+el('circle',{cx:540,cy:1400,r:80,fill:SKIN},pv.hook);
+el('path',{d:'M462,1395 C470,1300 610,1300 620,1395 C590,1350 500,1350 462,1395Z',fill:'#2a1c12'},pv.hook);
+const pvEyes=el('g',{},pv.hook);
+el('circle',{cx:512,cy:1405,r:7,fill:'#2a1c12'},pvEyes);el('circle',{cx:568,cy:1405,r:7,fill:'#2a1c12'},pvEyes);
+el('rect',{x:440,y:1500,width:200,height:150,rx:8,fill:GREEN,stroke:GOLD,'stroke-width':4},pv.hook);
+el('circle',{cx:418+5,cy:1580,r:22,fill:SKIN},pv.hook);el('circle',{cx:657,cy:1580,r:22,fill:SKIN},pv.hook);
+const pvQ=el('text',{x:640,y:1320,'font-size':70,'font-family':'Noto Kufi Arabic','font-weight':700,fill:'#c0392b'},pv.hook);pvQ.textContent='؟';
+// place: table + hand + book descending
+el('rect',{x:410,y:1560,width:260,height:120,fill:'#9b6b3f'},pv.place);
+const pvPlace=el('g',{},pv.place);
+el('rect',{x:470,y:-40,width:140,height:40,rx:5,fill:GREEN,stroke:GOLD,'stroke-width':3},pvPlace);
+el('path',{d:'M600,-30 C640,-60 660,-120 680,-200',fill:'none',stroke:SKIN,'stroke-width':34,'stroke-linecap':'round'},pvPlace);
+// cover: cover zoom
+el('rect',{x:410,y:1240,width:260,height:440,fill:'#9b6b3f'},pv.cover);
+const pvCover=el('g',{},pv.cover);
+el('rect',{x:-75,y:-105,width:150,height:210,rx:6,fill:GREEN,stroke:GOLD,'stroke-width':4},pvCover);
+el('rect',{x:-30,y:-70,width:60,height:60,fill:'none',stroke:GOLD,'stroke-width':3},pvCover);
+el('rect',{x:-30,y:-70,width:60,height:60,fill:'none',stroke:GOLD,'stroke-width':3,transform:'rotate(45 0 -40)'},pvCover);
+el('rect',{x:-50,y:20,width:100,height:10,rx:4,fill:GOLD},pvCover);el('rect',{x:-40,y:40,width:80,height:10,rx:4,fill:GOLD},pvCover);
+// flip: top view open book, page flipping
+el('rect',{x:410,y:1240,width:260,height:440,fill:'#9b6b3f'},pv.flip);
+el('rect',{x:430,y:1370,width:220,height:180,rx:6,fill:'#fbf5e6',stroke:'#c9b88f','stroke-width':3},pv.flip);
+el('line',{x1:540,y1:1370,x2:540,y2:1550,stroke:'#c9b88f','stroke-width':3},pv.flip);
+for(let i=0;i<5;i++){el('line',{x1:445,y1:1395+i*30,x2:525,y2:1395+i*30,stroke:'#999','stroke-width':3},pv.flip);el('line',{x1:555,y1:1395+i*30,x2:635,y2:1395+i*30,stroke:'#999','stroke-width':3},pv.flip)}
+const pvPage=el('rect',{x:540,y:1370,width:110,height:180,fill:'#fffdf5',stroke:'#c9b88f','stroke-width':3},pv.flip);
+const pvHand=el('circle',{r:26,fill:SKIN},pv.flip);
+// write: table grid + pen + check
+el('rect',{x:410,y:1240,width:260,height:440,fill:'#fbf5e6'},pv.write);
+for(let r=0;r<5;r++)for(let c=0;c<3;c++)el('rect',{x:440+c*67,y:1320+r*58,width:67,height:58,fill:'none',stroke:'#7a6a4a','stroke-width':2},pv.write);
+const pvCheck=el('path',{d:'M530,1468 L548,1488 L578,1450',fill:'none',stroke:'#2e9b5d','stroke-width':9,'stroke-linecap':'round','stroke-linejoin':'round'},pv.write);
+const pvPen=el('g',{},pv.write);
+el('rect',{x:-6,y:-90,width:12,height:90,fill:'#1d4e89',transform:'rotate(25)'},pvPen);
+el('circle',{cx:30,cy:-40,r:26,fill:SKIN},pvPen);
+// cta: book coming toward camera
+el('rect',{x:410,y:1240,width:260,height:440,fill:'#e9dcc0'},pv.cta);
+const pvCta=el('g',{},pv.cta);
+el('rect',{x:-70,y:-100,width:140,height:200,rx:6,fill:GREEN,stroke:GOLD,'stroke-width':4},pvCta);
+el('rect',{x:-45,y:10,width:90,height:9,rx:4,fill:GOLD},pvCta);el('rect',{x:-35,y:28,width:70,height:9,rx:4,fill:GOLD},pvCta);
+el('circle',{cx:-70,cy:30,r:22,fill:SKIN},pvCta);el('circle',{cx:70,cy:30,r:22,fill:SKIN},pvCta);
+
+/* ---------------- helpers ---------------- */
+function setCam(x,y,ax,ay,show){
+  const ang=Math.atan2(ay-y,ax-x);
+  phone.setAttribute('transform',`translate(${x},${y}) rotate(${(ang*180/Math.PI-90).toFixed(1)})`);
+  phone.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(ang*180/Math.PI+90).toFixed(1)})`);
+  const d=Math.hypot(ax-x,ay-y),sp=Math.max(70,d*0.28),nx=-Math.sin(ang),ny=Math.cos(ang);
+  cone.setAttribute('points',`${x},${y} ${(ax+nx*sp).toFixed(1)},${(ay+ny*sp).toFixed(1)} ${(ax-nx*sp).toFixed(1)},${(ay-ny*sp).toFixed(1)}`);
+  cone.setAttribute('opacity',show.toFixed(3));
+  const overhead=y<640;
+  legs.forEach((l,i)=>{const fx=overhead?[200,240,280][i]:x+[-60,0,60][i];l.setAttribute('x1',overhead?240:x);l.setAttribute('y1',overhead?660:y+44);l.setAttribute('x2',fx);l.setAttribute('y2',1098)});
+  arm2.setAttribute('opacity',overhead?1:0);
+  arm2.setAttribute('x1',240);arm2.setAttribute('y1',660);arm2.setAttribute('x2',x);arm2.setAttribute('y2',y);
+}
+function setArm(hx,hy){
+  const sx=865,sy=760; const ex=(sx+hx)/2+10, ey=Math.max(sy,hy)+40;
+  arm.setAttribute('d',`M${sx},${sy} Q${ex},${ey} ${hx.toFixed(1)},${hy.toFixed(1)}`);
+  hand.setAttribute('cx',hx.toFixed(1));hand.setAttribute('cy',hy.toFixed(1));
+}
+function showPv(kind,o){for(const k in pv)pv[k].setAttribute('opacity',k===kind?o.toFixed(3):0)}
+function txt(id,s){const e=$(id);if(e.textContent!==s)e.textContent=s}
+function fade(e,o,dy=0){e.style.opacity=o.toFixed(3);e.style.transform=`translateY(${dy.toFixed(1)}px)`}
+
+/* ---------------- render ---------------- */
+window.render=function(t){
+  let si=S.findIndex(s=>t>=s[0]&&t<s[1]); if(si<0)si=S.length-1;
+  const [a,b,badge,title,sub,tip,c]=S[si]; const u=t-a, L=b-a;
+  const io=Math.min(eOut(prog(u,0,.45)),1-eIO(prog(u,L-.35,L)));   // scene in/out
+  const isStep=!!badge;
+  txt('badge',badge);txt('title',title);txt('sub',sub);txt('tip',tip);
+  fade($('badge'),isStep?io:0,(1-eOut(prog(u,0,.45)))*-30);
+  $('badge').style.transform+=` scale(${isStep?(0.6+0.4*eOut(prog(u,0,.5))).toFixed(3):1})`;
+  fade($('title'),isStep?io:0,(1-eOut(prog(u,.05,.5)))*30);
+  fade($('sub'),isStep?Math.min(io,eOut(prog(u,.3,.8))):0);
+  fade($('tip'),isStep?Math.min(io,eOut(prog(u,1.2,1.7))):0,(1-eOut(prog(u,1.2,1.7)))*30);
+  fade($('intro'),c.kind==='intro'?io:0,(1-eOut(prog(u,0,.6)))*40);
+  fade($('outro'),c.kind==='outro'?Math.min(eOut(prog(u,0,.5)),1-prog(u,L-.4,L)):0,(1-eOut(prog(u,0,.6)))*40);
+
+  const diag=['hook','place','cover','flip','write','cta','light'].includes(c.kind);
+  D.setAttribute('opacity',(diag?io:0).toFixed(3));
+  setupG.setAttribute('opacity',(c.kind==='setup'?io:0).toFixed(3));
+  const pvOn=isStep?io:0; PV.setAttribute('opacity',pvOn.toFixed(3)); fade($('plabel'),pvOn);
+  showPv(c.kind,1);
+  recT.textContent='REC 00:0'+Math.floor(u%8); recDot.setAttribute('opacity',(Math.floor(t*2)%2?1:.25));
+
+  // defaults
+  rays.setAttribute('opacity',0.55); backLamp.setAttribute('opacity',0);
+  held.setAttribute('opacity',0); thought.setAttribute('opacity',0);
+  motion.setAttribute('opacity',0); motionHead.setAttribute('opacity',0);
+  P.setAttribute('opacity',1); tripod.setAttribute('opacity',1); phone.setAttribute('opacity',1);
+  head.setAttribute('transform','translate(842,680)');
+  book.setAttribute('transform','translate(540,900)'); bookBody.setAttribute('x',-60);bookBody.setAttribute('y',-18);bookBody.setAttribute('width',120);bookBody.setAttribute('height',18);
+  setArm(700,880);
+
+  if(c.kind==='setup'){
+    const r=eIO(prog(u,.3,1.3));                       // rotate to vertical
+    bigPhone.setAttribute('transform',`translate(540,800) rotate(${(-90*(1-r)).toFixed(1)}) scale(.85)`);
+    cross.setAttribute('opacity',(prog(u,0,.3)*(1-prog(u,.9,1.2))).toFixed(2)); cross.setAttribute('transform','translate(540,800)');
+    tick.setAttribute('opacity',eOut(prog(u,1.3,1.6)).toFixed(2)); tick.setAttribute('transform','translate(740,1020) scale(.8)');
+    const w=prog(u,2.2,4.0); lens.setAttribute('opacity',(eOut(prog(u,2.0,2.3))*(1-prog(u,4.0,4.3))).toFixed(2));
+    lens.setAttribute('transform','translate(330,1020)'); cloth.setAttribute('transform',`translate(${(Math.sin(w*Math.PI*4)*45).toFixed(1)},0)`);
+    bpText.textContent=u<1.3?'':'1080p · 30';
+  }
+  if(c.kind==='light'){
+    P.setAttribute('opacity',0); tripod.setAttribute('opacity',0); phone.setAttribute('opacity',0); cone.setAttribute('opacity',0);
+    const bad=u>2.4;
+    rays.setAttribute('opacity',(bad?0.12:0.75*(0.85+0.15*Math.sin(u*4))).toFixed(2));
+    backLamp.setAttribute('opacity',bad?eOut(prog(u,2.4,2.8)):0);
+    book.setAttribute('transform','translate(540,900)');
+    pv.light.setAttribute('opacity',1);
+  }
+  if(c.cam){
+    let [cx,cy]=c.cam; const [ax,ay]=c.aim;
+    if(c.kind==='cover'){const k=eIO(prog(u,.6,3.6));cx=lerp(c.cam[0],c.cam2[0],k);cy=lerp(c.cam[1],c.cam2[1],k);
+      motion.setAttribute('d',`M${c.cam[0]+30},${c.cam[1]-80} L${c.cam2[0]+10},${c.cam2[1]-80}`);motion.setAttribute('opacity',io*.9);
+      motionHead.setAttribute('points',`${c.cam2[0]+28},${c.cam2[1]-80} ${c.cam2[0]+2},${c.cam2[1]-96} ${c.cam2[0]+2},${c.cam2[1]-64}`);motionHead.setAttribute('opacity',io*.9);
+      motion.setAttribute('stroke-dashoffset',(-u*40).toFixed(1));
+      book.setAttribute('transform','translate(540,900)');bookBody.setAttribute('x',-12);bookBody.setAttribute('y',-150);bookBody.setAttribute('width',24);bookBody.setAttribute('height',150);
+      P.setAttribute('opacity',0);
+      pvCover.setAttribute('transform',`translate(540,1460) scale(${(0.8+0.55*k).toFixed(3)})`);
+    }
+    setCam(cx,cy,ax,ay,io*.9);
+  } else { cone.setAttribute('opacity',0); if(c.kind!=='light'){tripod.setAttribute('opacity',0);phone.setAttribute('opacity',0)} }
+
+  if(c.kind==='hook'){
+    book.setAttribute('opacity',0);
+    held.setAttribute('opacity',1); held.setAttribute('transform','translate(760,760) rotate(-20)');
+    setArm(745,800);
+    const look=u>1.6&&u<3.2;            // looks up, trying to remember
+    head.setAttribute('transform',`translate(842,${look?672:690}) rotate(${look?-14:12})`);
+    thought.setAttribute('opacity',eOut(prog(u,2.0,2.4)).toFixed(2)); thought.setAttribute('transform','translate(760,590)');
+    pvEyes.setAttribute('transform',`translate(0,${look?-12:6})`); pvQ.setAttribute('opacity',eOut(prog(u,2.0,2.4)));
+  } else book.setAttribute('opacity',1);
+  if(c.kind==='place'){
+    const k=eIO(prog(u,.5,2.4)); const by=lerp(760,900,k);
+    book.setAttribute('transform',`translate(${lerp(640,560,k).toFixed(1)},${by.toFixed(1)})`); setArm(lerp(660,600,k),by-12);
+    pvPlace.setAttribute('transform',`translate(0,${lerp(1290,1560,k).toFixed(1)})`);
+  }
+  if(c.kind==='flip'){
+    book.setAttribute('transform','translate(540,900)'); bookBody.setAttribute('x',-110);bookBody.setAttribute('width',220);bookBody.setAttribute('height',10);bookBody.setAttribute('y',-10);
+    const f=(u*0.9)%1, sx=Math.cos(f*Math.PI);
+    pvPage.setAttribute('transform',`translate(540,0) scale(${sx.toFixed(3)},1) translate(-540,0)`);
+    pvHand.setAttribute('cx',(540+110*sx).toFixed(1)); pvHand.setAttribute('cy',1530);
+    setArm(lerp(640,470,(Math.sin(u*Math.PI*1.8)+1)/2),888);
+  }
+  if(c.kind==='write'){
+    book.setAttribute('transform','translate(540,900)'); bookBody.setAttribute('x',-110);bookBody.setAttribute('width',220);bookBody.setAttribute('height',10);bookBody.setAttribute('y',-10);
+    const k=prog(u,.8,2.2);
+    const pts=[[530,1468],[548,1488],[578,1450]];
+    const seg=k<.4?k/.4:1, seg2=k<.4?0:(k-.4)/.6;
+    const px=k<.4?lerp(pts[0][0],pts[1][0],seg):lerp(pts[1][0],pts[2][0],seg2), py=k<.4?lerp(pts[0][1],pts[1][1],seg):lerp(pts[1][1],pts[2][1],seg2);
+    pvPen.setAttribute('transform',`translate(${px.toFixed(1)},${py.toFixed(1)})`);
+    pvCheck.style.strokeDasharray=90; pvCheck.style.strokeDashoffset=(90*(1-k)).toFixed(1);
+    setArm(560+8*Math.sin(u*9),884);
+  }
+  if(c.kind==='cta'){
+    book.setAttribute('opacity',0);
+    const k=eIO(prog(u,.6,2.6));
+    held.setAttribute('opacity',1); held.setAttribute('transform',`translate(${lerp(760,640,k).toFixed(1)},${lerp(780,720,k).toFixed(1)}) rotate(${lerp(-20,90,k).toFixed(1)}) scale(${lerp(1,.9,k).toFixed(3)})`);
+    setArm(lerp(745,660,k),lerp(820,790,k));
+    pvCta.setAttribute('transform',`translate(540,1460) scale(${lerp(.55,1.25,k).toFixed(3)})`);
+  }
+  $('stage').style.opacity=(eOut(prog(t,0,.25))*(1-prog(t,DUR-.3,DUR))).toFixed(3);
+};
+window.DUR=DUR;
+render(0);
+</script>
+</body>
+</html>

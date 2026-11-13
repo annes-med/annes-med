@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#03140f}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 40%,#0d4a3c 0%,#062e25 45%,#03140f 100%)}
+  svg.layer{position:absolute;inset:0}
+  .t{position:absolute;left:0;right:0;text-align:center;color:#f3e3b3;will-change:transform,opacity,filter}
+  .naskh{font-family:'Noto Naskh Arabic',serif}
+  .amiri{font-family:'Amiri',serif}
+  .kufi{font-family:'Noto Kufi Arabic',sans-serif}
+  .gold{background:linear-gradient(180deg,#fff2c4 0%,#e8c46a 45%,#b8862b 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .shadow{filter:drop-shadow(0 4px 10px rgba(0,0,0,.8))}
+
+  /* 3D book */
+  #scene3d{position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:2200px;perspective-origin:50% 45%}
+  #book{position:absolute;left:340px;top:560px;width:400px;height:560px;transform-style:preserve-3d}
+  .face{position:absolute;backface-visibility:hidden}
+  #front{width:400px;height:560px;border-radius:4px 14px 14px 4px;
+    background:linear-gradient(135deg,#0f5a48 0%,#0a3f33 55%,#06281f 100%);
+    box-shadow:inset 0 0 0 14px #0a3f33, inset 0 0 0 17px #e8c46a, inset 0 0 0 26px #0a3f33, inset 0 0 0 28px rgba(232,196,106,.6);
+    transform:translateZ(30px);overflow:hidden}
+  #front .ttl{position:absolute;left:0;right:0;text-align:center}
+  #front .sheen{position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.22) 45%,transparent 60%);}
+  #spine{width:60px;height:560px;left:370px;background:linear-gradient(90deg,#06281f,#0d4a3c 50%,#06281f);
+    transform:rotateY(90deg) translateZ(0px);transform-origin:left center;
+    box-shadow:inset 0 30px 0 -26px #e8c46a, inset 0 -30px 0 -26px #e8c46a}
+  #pages{width:56px;height:548px;top:6px;left:-28px;background:repeating-linear-gradient(90deg,#f6efdc 0 2px,#e2d6b8 2px 4px);
+    transform:rotateY(-90deg) translateZ(2px)}
+  #back{width:400px;height:560px;border-radius:14px 4px 4px 14px;background:#06281f;transform:rotateY(180deg) translateZ(30px)}
+  #floorShadow{position:absolute;left:300px;top:1130px;width:480px;height:60px;border-radius:50%;
+    background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%)}
+
+  .card{position:absolute;right:90px;left:90px;height:150px;border-radius:28px;display:flex;align-items:center;gap:30px;
+    padding:0 40px;box-sizing:border-box;background:rgba(232,196,106,.10);border:3px solid rgba(232,196,106,.7);
+    color:#f3e3b3;font-family:'Noto Kufi Arabic';font-size:50px;font-weight:700}
+  .card .ic{width:84px;height:84px;border-radius:50%;background:#e8c46a;color:#06281f;display:flex;align-items:center;justify-content:center;font-size:52px;flex:none}
+  #btn{position:absolute;left:190px;width:700px;top:1500px;height:150px;border-radius:80px;background:linear-gradient(180deg,#f5d98a,#c9993a);
+    color:#06281f;font-family:'Noto Kufi Arabic';font-size:58px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 40px rgba(232,196,106,.45)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <svg class="layer" id="bg" width="1080" height="1920"></svg>
+  <svg class="layer" id="fx" width="1080" height="1920"></svg>
+
+  <!-- S1 hook -->
+  <div id="h1" class="t naskh shadow" style="top:700px;font-size:120px;font-weight:700">تحفظ اليوم…</div>
+  <div id="h2" class="t naskh gold shadow" style="top:900px;font-size:130px;font-weight:700">وتنسى غدًا؟</div>
+  <!-- S2 problem -->
+  <div id="p1" class="t kufi shadow" style="top:720px;font-size:66px;font-weight:700;color:#cfe8dc">المشكلة ليست فيك…</div>
+  <div id="p2" class="t naskh gold shadow" style="top:860px;font-size:120px;font-weight:700">بل في الطريقة</div>
+
+  <!-- S3-S5 book -->
+  <div id="floorShadow"></div>
+  <div id="scene3d">
+    <div id="book">
+      <div id="back" class="face"></div>
+      <div id="pages" class="face"></div>
+      <div id="spine" class="face"></div>
+      <div id="front" class="face">
+        <svg width="400" height="560" style="position:absolute;inset:0">
+          <g transform="translate(200,175)" fill="none" stroke="#e8c46a" stroke-width="3">
+            <rect x="-62" y="-62" width="124" height="124"/>
+            <rect x="-62" y="-62" width="124" height="124" transform="rotate(45)"/>
+            <circle r="34" stroke-width="2"/>
+          </g>
+        </svg>
+        <div class="ttl amiri gold" style="top:300px;font-size:62px;font-weight:700;line-height:1.15">تسهيل حفظ</div>
+        <div class="ttl amiri gold" style="top:380px;font-size:56px;font-weight:700">القرآن الكريم</div>
+        <div class="sheen" id="sheen"></div>
+      </div>
+    </div>
+  </div>
+  <div id="b1" class="t kufi shadow" style="top:1240px;font-size:44px;color:#cfe8dc">كتاب</div>
+  <div id="b2" class="t naskh gold shadow" style="top:1300px;font-size:96px;font-weight:700;line-height:1.3">تسهيل حفظ القرآن الكريم</div>
+
+  <div id="c1" class="card" style="top:1180px"><div class="ic">✓</div>منهج خطوة بخطوة</div>
+  <div id="c2" class="card" style="top:1360px"><div class="ic">✓</div>جداول للحفظ والمراجعة</div>
+  <div id="c3" class="card" style="top:1540px"><div class="ic">✓</div>للصغار والكبار</div>
+
+  <div id="cta" class="t naskh gold shadow" style="top:1240px;font-size:110px;font-weight:700">اطلب نسختك الآن</div>
+  <div id="btn">الرابط في الوصف</div>
+</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg',W=1080,H=1920;
+const el=(tag,a,p)=>{const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3);
+const eInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c=1.70158,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const win=(t,a,b,fi=.4,fo=.35)=>Math.min(eOut(prog(t,a,a+fi)),1-eInOut(prog(t,b-fo,b)));
+
+// background: geometric tiles + light
+const bg=$('bg'),defs=el('defs',{},bg);
+const rl=el('radialGradient',{id:'light'},defs);
+el('stop',{offset:'0','stop-color':'#fff6d6','stop-opacity':.85},rl);
+el('stop',{offset:'.4','stop-color':'#e8c46a','stop-opacity':.28},rl);
+el('stop',{offset:'1','stop-color':'#e8c46a','stop-opacity':0},rl);
+const vg=el('radialGradient',{id:'vig',cx:'50%',cy:'45%',r:'65%'},defs);
+el('stop',{offset:'55%','stop-color':'#000','stop-opacity':0},vg);el('stop',{offset:'100%','stop-color':'#000','stop-opacity':.65},vg);
+const tiles=el('g',{opacity:.1},bg);
+function rub(cx,cy,r){let d='';for(const rot of [0,Math.PI/4]){const p=[];for(let i=0;i<4;i++){const a=rot+i*Math.PI/2;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}d+='M'+p.join('L')+'Z'}return d}
+for(let y=-1;y<13;y++)for(let x=-1;x<8;x++)el('path',{d:rub(x*180+(y%2?90:0),y*162,64),fill:'none',stroke:'#e8c46a','stroke-width':1.5},tiles);
+const halo=el('circle',{cx:540,cy:840,r:520,fill:'url(#light)',opacity:0},bg);
+el('rect',{width:W,height:H,fill:'url(#vig)'},bg);
+
+// fx: particles, rays, underline, "forgetting" dust
+const fx=$('fx');
+const rays=el('g',{opacity:0},fx);
+for(let i=0;i<24;i++){const a=i*Math.PI/12;el('path',{d:`M540,840 L${540+1500*Math.cos(a-.03)},${840+1500*Math.sin(a-.03)} L${540+1500*Math.cos(a+.03)},${840+1500*Math.sin(a+.03)}Z`,fill:'#e8c46a',opacity:.07},rays)}
+const under=el('path',{d:'M860,1010 C700,1040 380,1040 220,1005',fill:'none',stroke:'#e8c46a','stroke-width':8,'stroke-linecap':'round'},fx);
+const UL=under.getTotalLength();under.style.strokeDasharray=UL;
+let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const parts=[];for(let i=0;i<60;i++)parts.push({x:rnd()*W,y:rnd()*H,r:1.5+rnd()*3.5,s:20+rnd()*60,ph:rnd()*6.3,c:el('circle',{r:1,fill:'#ffe9a8'},fx)});
+const dust=[];for(let i=0;i<120;i++)dust.push({x:300+rnd()*480,y:940+rnd()*120,vx:(rnd()-.5)*260,vy:-60-rnd()*240,r:2+rnd()*4,c:el('circle',{r:0,fill:'#e8c46a'},fx)});
+
+function set(e,o,ty=0,sc=1,blur=0,tx=0){
+  e.style.opacity=o.toFixed(3);
+  e.style.transform=`translate(${tx.toFixed(1)}px,${ty.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+  const base=e.classList.contains('shadow')?'drop-shadow(0 4px 10px rgba(0,0,0,.8))':'';
+  e.style.filter=(blur>.05?`blur(${blur.toFixed(1)}px) `:'')+base||'none';
+}
+
+window.render=function(t){
+  // S1 hook 0-3
+  set($('h1'),win(t,0.15,3.0),(1-eOut(prog(t,.15,.6)))*50);
+  const forget=prog(t,1.9,2.9);
+  set($('h2'),win(t,0.9,3.0,.4,.15)*(1-forget*.85),(1-eOut(prog(t,.9,1.3)))*50,eBack(prog(t,.9,1.4))*.15+.85,forget*16,forget*-30);
+  dust.forEach(d=>{const k=prog(t,1.9,3.0);d.c.setAttribute('cx',(d.x+d.vx*k).toFixed(1));d.c.setAttribute('cy',(d.y+d.vy*k).toFixed(1));
+    d.c.setAttribute('r',(d.r*(k>0&&k<1?1:0)).toFixed(1));d.c.setAttribute('opacity',(1-k).toFixed(2))});
+
+  // S2 problem 3-6
+  set($('p1'),win(t,3.1,6.0),(1-eOut(prog(t,3.1,3.5)))*40);
+  set($('p2'),win(t,3.7,6.0),(1-eOut(prog(t,3.7,4.2)))*50,.9+.1*eBack(prog(t,3.7,4.2)));
+  under.style.strokeDashoffset=(UL*(1-eInOut(prog(t,4.3,5.0)))).toFixed(1);
+  under.setAttribute('opacity',win(t,4.3,6.0).toFixed(3));
+
+  // book: in at 6, rises to top at 10, center for CTA at 16
+  const bin=eOut(prog(t,6.0,7.2));
+  const up=eInOut(prog(t,9.8,10.5)), down=eInOut(prog(t,15.8,16.5));
+  const bookY=-80*up*(1-down) + (1-bin)*200 - 40*down;
+  const bookS=(0.75+0.25*bin)*(1-0.22*up*(1-down));
+  const spin=(1-eOut(prog(t,6.0,7.6)))*-200 + 22*Math.sin(t*0.9) - 18;
+  const tilt=8+3*Math.sin(t*0.7);
+  $('book').style.transform=`translateY(${bookY.toFixed(1)}px) scale(${bookS.toFixed(3)}) rotateX(${tilt.toFixed(2)}deg) rotateY(${spin.toFixed(2)}deg)`;
+  const bookO=eOut(prog(t,6.0,6.5))*(1-prog(t,19.7,20));
+  $('scene3d').style.opacity=bookO.toFixed(3);
+  $('floorShadow').style.opacity=(bookO*(1-up*(1-down))).toFixed(3);
+  $('sheen').style.transform=`translateX(${(-500+((t*380)%1400)).toFixed(0)}px)`;
+  halo.setAttribute('opacity',(0.9*bookO).toFixed(3));
+  halo.setAttribute('cy',(840+bookY).toFixed(1));
+  rays.setAttribute('opacity',(eOut(prog(t,6.2,7.0))*(1-0.6*up*(1-down))*bookO).toFixed(3));
+  rays.setAttribute('transform',`translate(0,${bookY.toFixed(1)}) rotate(${(t*7).toFixed(2)} 540 840)`);
+
+  // S3 title under book 6.6-10
+  set($('b1'),win(t,6.9,10.0),(1-eOut(prog(t,6.9,7.3)))*30);
+  set($('b2'),win(t,7.1,10.0),(1-eOut(prog(t,7.1,7.6)))*50,.92+.08*eBack(prog(t,7.1,7.7)),(1-eOut(prog(t,7.1,7.5)))*12);
+
+  // S4 feature cards 10.5-16
+  ['c1','c2','c3'].forEach((id,i)=>{const a=10.6+i*1.6;const k=eOut(prog(t,a,a+.45));
+    const e=$(id);e.style.opacity=(k*(1-eInOut(prog(t,15.5,15.9)))).toFixed(3);
+    e.style.transform=`translateX(${((1-k)*-700).toFixed(1)}px)`;
+    const act=Math.max(0,1-Math.abs(t-(a+.6))/0.6);
+    e.style.background=`rgba(232,196,106,${(.10+.18*act).toFixed(3)})`;});
+
+  // S5 CTA 16-20
+  set($('cta'),eOut(prog(t,16.4,16.9))*(1-prog(t,19.7,20)),(1-eOut(prog(t,16.4,16.9)))*50,.9+.1*eBack(prog(t,16.4,17)));
+  const bk=eBack(prog(t,17.0,17.5)),pulse=1+.04*Math.sin((t-17)*6)*(t>17.5?1:0);
+  $('btn').style.opacity=(eOut(prog(t,17,17.3))*(1-prog(t,19.7,20))).toFixed(3);
+  $('btn').style.transform=`scale(${Math.max(.001,bk*pulse).toFixed(3)})`;
+
+  // particles
+  for(const p of parts){const y=((p.y-t*p.s)%H+H)%H;p.c.setAttribute('cx',(p.x+12*Math.sin(t*.8+p.ph)).toFixed(1));
+    p.c.setAttribute('cy',y.toFixed(1));p.c.setAttribute('r',p.r.toFixed(1));p.c.setAttribute('opacity',(.2+.4*(.5+.5*Math.sin(t*3+p.ph))).toFixed(2))}
+  tiles.setAttribute('opacity',(0.06+0.06*bookO).toFixed(3));
+  $('stage').style.opacity=(eOut(prog(t,0,.25))*(1-prog(t,19.75,20))).toFixed(3);
+};
+render(0);
+</script>
+</body>
+</html>

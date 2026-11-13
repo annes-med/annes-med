@@ -51,3 +51,34 @@ pdftoppm -r 300 -png file.pdf page && tesseract page-1.png - -l ara+eng  # OCR �
 qpdf --empty --pages a.pdf b.pdf -- merged.pdf            # دمج (لا يمسّ النص العربي)
 gs -q -sDEVICE=pdfwrite -dPDFSETTINGS=/ebook -o small.pdf big.pdf       # ضغط
 ```
+
+## 4. أدوات GitHub الأعلى تقييماً — مختبرة على العربي
+
+| الأداة (نجوم GitHub) | الاستخدام | النتيجة على العربي |
+|---|---|---|
+| **PaddleOCR** (92k) | OCR | ✅ **الأفضل**: كل السطور صحيحة ومرتبة — بشرط النموذج العربي (انظر الكود) |
+| **EasyOCR** (30k) | OCR | ✅ كل الكلمات صحيحة، لكن يقطع العنوان إلى أجزاء |
+| **faster-whisper** (Whisper 112k) | تحويل الكلام العربي إلى نص / ترجمة الفيديو | ✅ دقيق، 10 ثوانٍ صوت في 8 ثوانٍ على المعالج |
+| **MarkItDown** (195k) | Word/Excel/PowerPoint → Markdown | ✅ ممتاز لـ Word (عناوين + جداول) · ❌ يقلب العربي في PDF |
+| **Docling** (70k) | PDF → Markdown | ⚠️ النص صحيح غالباً، لكن ضاع شكل الجدول و«الأجزاء» صارت «أجزاء ال» |
+| Marker (41k) | PDF → Markdown | ⛔ لم يُختبر: يحتاج نماذج من `models.datalab.to` (محجوب) |
+| Stirling-PDF (96k) | تطبيق ويب لتعديل PDF | ⛔ غير مثبّت: يحتاج Docker/خادم Java |
+
+```bash
+export HF_HUB_DISABLE_XET=1     # ضروري في هذه البيئة لتنزيل النماذج
+```
+```python
+# PaddleOCR للعربي — هذه الإعدادات ضرورية (الافتراضي لا يقرأ العربي أو يستهلك 20GB ذاكرة)
+from paddleocr import PaddleOCR
+ocr = PaddleOCR(text_detection_model_name="PP-OCRv5_mobile_det",
+                text_recognition_model_name="arabic_PP-OCRv5_mobile_rec",
+                text_det_limit_side_len=960, text_det_limit_type="max",
+                use_doc_orientation_classify=False, use_doc_unwarping=False,
+                use_textline_orientation=False, enable_mkldnn=False)
+for r in ocr.predict("scan.png"): print("\n".join(r["rec_texts"]))
+
+# Whisper للعربي (ترجمة الفيديو)
+from faster_whisper import WhisperModel
+m = WhisperModel("small", device="cpu", compute_type="int8")   # أو "medium" لدقة أعلى
+for s in m.transcribe("video.mp4", language="ar")[0]: print(f"[{s.start:.1f}] {s.text}")
+```

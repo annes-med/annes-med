@@ -1,0 +1,271 @@
+<title>مصحف تسهيل الحفظ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+/* Layout: one narrow reading column (mobile first); the quiz is a single card that swaps steps in place. */
+:root{
+  --bg:#eef3f0; --surface:#ffffff; --ink:#12241e; --muted:#5b6f67; --line:#d5e1db;
+  --emerald:#0d4a3c; --emerald-2:#13664f; --gold:#b98a2e; --gold-soft:#f3e6c4; --ok:#1f8a5b; --bad:#b4442f;
+  --on-emerald:#f6efd9;
+  --f-display:'Reem Kufi','Noto Kufi Arabic',sans-serif;
+  --f-body:'IBM Plex Sans Arabic','Noto Sans Arabic',system-ui,sans-serif;
+  --f-quran:'Amiri','Noto Naskh Arabic',serif;
+  --r:18px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0a1713; --surface:#11241e; --ink:#e9f1ed; --muted:#9db3aa; --line:#23413a;
+  --emerald:#0f5a48; --emerald-2:#1b7a60; --gold:#e2b75b; --gold-soft:#3a3018; --ok:#4cc38a; --bad:#ec7a63;
+  --on-emerald:#f6efd9; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a1713; --surface:#11241e; --ink:#e9f1ed; --muted:#9db3aa; --line:#23413a;
+  --emerald:#0f5a48; --emerald-2:#1b7a60; --gold:#e2b75b; --gold-soft:#3a3018; --ok:#4cc38a; --bad:#ec7a63;
+  --on-emerald:#f6efd9; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.75;direction:rtl}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);line-height:1.3;text-wrap:balance;margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* hero */
+.hero{background:var(--emerald);color:var(--on-emerald);position:relative;overflow:hidden}
+.hero .wrap{padding-block:44px 52px;display:grid;gap:18px;position:relative}
+.hero::before{content:"";position:absolute;inset:0;opacity:.13;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='none' stroke='%23e2b75b' stroke-width='1.4'%3E%3Crect x='35' y='35' width='50' height='50'/%3E%3Crect x='35' y='35' width='50' height='50' transform='rotate(45 60 60)'/%3E%3C/g%3E%3C/svg%3E")}
+.eyebrow{font-size:14px;letter-spacing:.04em;color:var(--gold-soft);opacity:.9}
+:root[data-theme="dark"] .eyebrow{color:#f3e6c4}
+.hero h1{font-size:clamp(34px,8vw,48px);color:#fff}
+.hero h1 span{color:#e8c46a}
+.hero p{margin:0;max-width:34em;opacity:.92}
+.hero .ayah{font-family:var(--f-quran);font-size:22px;color:#f3e3b3;border-right:3px solid #e8c46a;padding-right:14px}
+.hero .ayah small{display:block;font-family:var(--f-body);font-size:13px;opacity:.75}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:14px 26px;font-weight:700;font-size:17px}
+.btn-gold{background:linear-gradient(180deg,#f2d488,#c9993a);color:#1d1606;box-shadow:0 6px 20px rgba(201,153,58,.35)}
+.btn-ghost{background:transparent;border:2px solid var(--line);color:var(--ink)}
+.btn-main{background:var(--emerald);color:var(--on-emerald)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hero .meta{font-size:14px;opacity:.8}
+
+/* quiz card */
+section{padding-block:36px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px 20px;box-shadow:0 10px 30px rgba(13,74,60,.08)}
+.quiz{margin-top:-34px;position:relative}
+.progress{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--emerald-2));border-radius:99px;transition:width .4s ease}
+.q h2{font-size:24px;margin-bottom:6px}
+.q .hint{color:var(--muted);font-size:15px;margin:0 0 16px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:right;width:100%;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--emerald-2)}
+.opt .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center}
+.opt[aria-pressed="true"]{border-color:var(--emerald-2);background:color-mix(in srgb,var(--emerald-2) 9%,var(--surface))}
+.opt[aria-pressed="true"] .dot{border-color:var(--emerald-2);background:var(--emerald-2)}
+.opt[aria-pressed="true"] .dot::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--on-emerald)}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 9%,var(--surface))}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+
+.verse{font-family:var(--f-quran);font-size:26px;line-height:2.1;text-align:center;background:var(--gold-soft);border-radius:14px;padding:18px 14px;margin:6px 0 14px;color:var(--ink)}
+.verse.hide{filter:blur(9px);user-select:none}
+.timer{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.timer b{font-size:22px;color:var(--gold)}
+.blank{display:inline-block;min-width:70px;border-bottom:3px dashed var(--gold);margin:0 4px}
+
+/* result */
+.result h2{font-size:28px}
+.level{display:flex;align-items:center;gap:16px;margin:14px 0 18px}
+.ring{--p:0;width:96px;height:96px;border-radius:50%;flex:none;display:grid;place-items:center;
+  background:conic-gradient(var(--gold) calc(var(--p)*1%),var(--line) 0)}
+.ring span{width:76px;height:76px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-family:var(--f-display);font-size:24px;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;padding:2px 12px;border-radius:99px;background:var(--emerald);color:var(--on-emerald);font-size:14px;font-weight:700}
+.plan{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.plan li{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--emerald-2) 7%,var(--surface));border:1px solid var(--line)}
+.plan li b{color:var(--emerald-2)}
+:root[data-theme="dark"] .plan li b{color:var(--gold)}
+.plan .k{font-family:var(--f-display);color:var(--gold);font-size:20px;line-height:1.4;flex:none;width:24px;text-align:center}
+
+/* product */
+.product{display:grid;gap:18px}
+.feat{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.feat li{display:flex;gap:10px;align-items:flex-start}
+.feat li::before{content:"✓";flex:none;width:26px;height:26px;border-radius:50%;background:var(--gold-soft);color:var(--gold);display:grid;place-items:center;font-weight:700;margin-top:3px}
+.price{display:flex;align-items:baseline;gap:10px;font-family:var(--f-display)}
+.price b{font-size:34px;color:var(--emerald-2)}
+:root[data-theme="dark"] .price b{color:var(--gold)}
+.note{font-size:13px;color:var(--muted)}
+.mock{display:grid;place-items:center;padding:10px 0}
+.book{width:170px;aspect-ratio:3/4.2;max-width:100%;border-radius:4px 12px 12px 4px;background:linear-gradient(135deg,#13664f,#0a3f33 60%,#06281f);
+  box-shadow:inset 0 0 0 9px #0a3f33,inset 0 0 0 11px #e2b75b,12px 14px 28px rgba(0,0,0,.25);display:grid;place-items:center;text-align:center;color:#ecc66d;font-family:var(--f-quran);font-size:21px;line-height:1.5;transform:rotate(-4deg)}
+
+form{display:grid;gap:12px}
+label{display:grid;gap:4px;font-size:15px;font-weight:500}
+input,select{font:inherit;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);width:100%}
+input:focus,select:focus{border-color:var(--emerald-2);outline:none}
+.done{padding:14px;border-radius:12px;background:color-mix(in srgb,var(--ok) 12%,var(--surface));border:1px solid var(--ok)}
+
+details{border-bottom:1px solid var(--line);padding-block:14px}
+summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::after{content:"+";color:var(--gold);font-size:22px;line-height:1}
+details[open] summary::after{content:"−"}
+details p{margin:8px 0 0;color:var(--muted)}
+footer{padding-block:28px;text-align:center;font-size:13px;color:var(--muted)}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:.0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}.bar i{transition:none}}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">اختبار مجاني · دقيقة واحدة</div>
+    <h1>كم تحفظ… <span>وكم تنسى؟</span></h1>
+    <p>أجب عن خمسة أسئلة قصيرة، وخذ اختبار ذاكرة سريعًا على سورة العصر، ثم احصل على خطة حفظ تناسب وقتك ومستواك.</p>
+    <div class="ayah">﴿وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ﴾<small>سورة القمر · الآية 17</small></div>
+    <div><button class="btn btn-gold" id="startBtn">ابدأ اختبار الحفظ</button></div>
+    <div class="meta">بدون تسجيل · النتيجة تظهر فورًا</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="quiz" id="quiz" aria-live="polite">
+    <div class="card" id="quizCard"></div>
+  </section>
+
+  <section id="product" aria-labelledby="pTitle">
+    <div class="card product">
+      <div class="mock" aria-hidden="true"><div class="book">تسهيل حفظ<br>القرآن الكريم</div></div>
+      <h2 id="pTitle">مصحف تسهيل حفظ القرآن الكريم</h2>
+      <ul class="feat">
+        <li>منهج واضح خطوة بخطوة: ماذا تحفظ اليوم، وماذا تراجع</li>
+        <li>جداول للمتابعة اليومية والمراجعة</li>
+        <li>مناسب للصغار والكبار، وللمبتدئ ومن يريد التثبيت</li>
+      </ul>
+      <div class="price"><b>[السعر]</b> دج <span class="note">· التوصيل إلى كل الولايات</span></div>
+      <p class="note">المميزات والسعر هنا أمثلة، تُستبدل بمعلومات الكتاب الحقيقية.</p>
+      <form id="orderForm" novalidate>
+        <label for="oName">الاسم الكامل<input id="oName" required autocomplete="name" placeholder="مثال: محمد بن علي"></label>
+        <label for="oPhone">رقم الهاتف<input id="oPhone" required inputmode="tel" autocomplete="tel" placeholder="05XX XX XX XX" pattern="0[5-7][0-9 ]{8,11}"></label>
+        <label for="oWilaya">الولاية<select id="oWilaya" required>
+          <option value="">اختر الولاية</option><option>الجزائر</option><option>وهران</option><option>قسنطينة</option><option>سطيف</option><option>البليدة</option><option>عنابة</option><option>باتنة</option><option>تلمسان</option><option>ولاية أخرى</option>
+        </select></label>
+        <button class="btn btn-gold" type="submit">اطلب نسختك الآن</button>
+        <div id="orderMsg" hidden></div>
+      </form>
+    </div>
+  </section>
+
+  <section aria-labelledby="faqTitle">
+    <h2 id="faqTitle" style="font-size:24px;margin-bottom:6px">أسئلة شائعة</h2>
+    <details><summary>هل يناسب من لم يحفظ شيئًا من قبل؟</summary><p>نعم. الاختبار أعلاه يحدّد نقطة البداية، والمنهج يبدأ بمقدار يومي صغير ثم يزيد تدريجيًا.</p></details>
+    <details><summary>كم دقيقة أحتاج يوميًا؟</summary><p>يكفي 15 دقيقة للبداية. المهم هو الانتظام اليومي مع المراجعة، لا طول الجلسة.</p></details>
+    <details><summary>كيف يتم الدفع والتوصيل؟</summary><p>الدفع عند الاستلام، والتوصيل إلى كل الولايات. (مثال: عدّله حسب طريقتك.)</p></details>
+  </section>
+</main>
+<footer class="wrap">مصحف تسهيل حفظ القرآن الكريم</footer>
+
+<script>
+const VERSE='وَالْعَصْرِ ۝ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ۝ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ';
+const STEPS=[
+ {id:'have',type:'choice',title:'كم تحفظ من القرآن حاليًا؟',hint:'اختر الأقرب لحالك.',
+  opts:[['لم أبدأ بعد',0],['أقل من جزء',1],['من جزء إلى 5 أجزاء',2],['أكثر من 5 أجزاء',3]]},
+ {id:'time',type:'choice',title:'كم دقيقة تستطيع أن تخصّص يوميًا؟',hint:'كن واقعيًا، فالانتظام أهم من الطول.',
+  opts:[['10 دقائق',0],['20 دقيقة',1],['45 دقيقة',2],['ساعة أو أكثر',3]]},
+ {id:'issue',type:'choice',title:'ما أكبر صعوبة تواجهك؟',hint:'',
+  opts:[['أحفظ ثم أنسى بسرعة','forget'],['لا أنتظم، أبدأ ثم أتوقف','regular'],['أخلط بين الآيات المتشابهة','similar'],['لا أعرف من أين أبدأ','start']]},
+ {id:'review',type:'choice',title:'كيف تراجع ما حفظته؟',hint:'',
+  opts:[['لا أراجع تقريبًا',0],['أراجع أحيانًا',1],['أراجع كل يوم',2]]},
+ {id:'memo',type:'memory'},
+];
+const ans={}; let step=-1, memoPhase='show', memoTimer=null, memoAns={};
+const card=document.getElementById('quizCard');
+
+function progress(i){const n=STEPS.length;const p=Math.round(i/n*100);
+  return `<div class="progress"><span>الخطوة ${Math.min(i+1,n)} من ${n}</span><div class="bar"><i style="width:${p}%"></i></div></div>`}
+
+function intro(){card.innerHTML=`<div class="fade">${progress(0).replace('الخطوة 1 من','0 من')}
+  <h2 style="font-size:24px">اعرف مستواك في الحفظ</h2>
+  <p class="hint" style="color:var(--muted)">4 أسئلة عن عادتك في الحفظ، ثم اختبار ذاكرة قصير: تقرأ سورة العصر 15 ثانية، ثم تُكمل الكلمات الناقصة.</p>
+  <button class="btn btn-main" id="go">ابدأ الآن</button></div>`;
+  document.getElementById('go').onclick=()=>show(0);}
+
+function show(i){step=i;clearInterval(memoTimer);const s=STEPS[i];
+  if(s.type==='choice'){
+    card.innerHTML=`<div class="q fade">${progress(i)}<h2>${s.title}</h2>${s.hint?`<p class="hint">${s.hint}</p>`:''}
+      <div class="opts">${s.opts.map((o,k)=>`<button class="opt" data-k="${k}" aria-pressed="${ans[s.id]===o[1]}"><span class="dot"></span>${o[0]}</button>`).join('')}</div>
+      <div class="nav"><button class="btn btn-ghost" id="back" ${i===0?'disabled':''}>السابق</button><button class="btn btn-main" id="next" ${ans[s.id]===undefined?'disabled':''}>التالي</button></div></div>`;
+    card.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ans[s.id]=s.opts[+b.dataset.k][1];
+      card.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));document.getElementById('next').disabled=false;
+      setTimeout(()=>show(i+1),260)});
+    document.getElementById('back').onclick=()=>i>0&&show(i-1);
+    document.getElementById('next').onclick=()=>show(i+1);
+  } else memory();
+}
+
+function memory(){
+  memoPhase='show';let left=15;
+  card.innerHTML=`<div class="q fade">${progress(step)}<h2>اختبار الذاكرة</h2><p class="hint">اقرأ السورة بتركيز. ستختفي بعد 15 ثانية.</p>
+    <div class="verse" id="verse">${VERSE}</div>
+    <div class="timer"><span>الوقت المتبقي</span><b id="left">15</b><span>ثانية</span></div>
+    <div class="nav"><button class="btn btn-ghost" id="back">السابق</button><button class="btn btn-main" id="ready">حفظتها، أخفِ النص</button></div></div>`;
+  document.getElementById('back').onclick=()=>show(step-1);
+  document.getElementById('ready').onclick=recall;
+  memoTimer=setInterval(()=>{left--;const e=document.getElementById('left');if(e)e.textContent=left;if(left<=0)recall()},1000);
+}
+const RECALL=[
+  {q:'إِنَّ الْإِنسَانَ لَفِي',a:'خُسْرٍ',opts:['خُسْرٍ','عُسْرٍ','نُكْرٍ']},
+  {q:'وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا',a:'بِالصَّبْرِ',opts:['بِالْمَرْحَمَةِ','بِالصَّبْرِ','بِالْخَيْرِ']},
+];
+function recall(){clearInterval(memoTimer);memoAns={};
+  card.innerHTML=`<div class="q fade">${progress(step)}<h2>أكمل الكلمة الناقصة</h2><p class="hint">من الذاكرة، بدون الرجوع إلى النص.</p>
+    <div class="verse hide" aria-hidden="true">${VERSE}</div>
+    ${RECALL.map((r,ri)=>`<p style="font-family:var(--f-quran);font-size:22px;margin:10px 0 8px">${r.q} <span class="blank"></span></p>
+      <div class="opts" data-r="${ri}">${r.opts.map(o=>`<button class="opt" data-v="${o}" style="font-family:var(--f-quran);font-size:20px"><span class="dot"></span>${o}</button>`).join('')}</div>`).join('')}
+    <div class="nav"><button class="btn btn-ghost" id="again">أعد القراءة</button><button class="btn btn-main" id="finish" disabled>اعرض نتيجتي</button></div></div>`;
+  card.querySelectorAll('.opts').forEach(g=>{const ri=+g.dataset.r;
+    g.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(memoAns[ri]!==undefined)return;memoAns[ri]=b.dataset.v;
+      g.querySelectorAll('.opt').forEach(x=>{if(x.dataset.v===RECALL[ri].a)x.classList.add('right');else if(x===b)x.classList.add('wrong')});
+      document.getElementById('finish').disabled=Object.keys(memoAns).length<RECALL.length;})});
+  document.getElementById('again').onclick=memory;
+  document.getElementById('finish').onclick=result;
+}
+
+function result(){
+  const correct=RECALL.filter((r,i)=>memoAns[i]===r.a).length;
+  // score out of 100: memorized 0-3, review 0-2, recall 0-2 (time is a capacity, not a skill)
+  const score=Math.round(((ans.have/3)*40+(ans.review/2)*30+(correct/2)*30));
+  const level=score<35?'مرحلة البداية':score<70?'مرحلة البناء':'مرحلة التثبيت';
+  const daily=['3 أسطر جديدة','5 أسطر جديدة','نصف صفحة جديدة','صفحة كاملة'][ans.time];
+  const rev=['10 دقائق','15 دقيقة','20 دقيقة','30 دقيقة'][ans.time];
+  const tip={forget:'النسيان سببه قلة التكرار المتباعد: كرّر حفظ اليوم مساءً، ثم بعد 3 أيام، ثم بعد أسبوع.',
+    regular:'اربط الحفظ بوقت ثابت (بعد الفجر مثلًا) ولا تزد المقدار حتى تكمل 21 يومًا متتالية.',
+    similar:'سجّل الآيات المتشابهة في جدول خاص وقارن بينها كلمةً بكلمة عند المراجعة.',
+    start:'ابدأ من جزء عمّ بالسور القصيرة، فهي تمنحك إنجازًا سريعًا يشجعك على الاستمرار.'}[ans.issue];
+  card.innerHTML=`<div class="result fade">${progress(STEPS.length)}
+    <h2>نتيجتك</h2>
+    <div class="level"><div class="ring" style="--p:${score}"><span>${score}</span></div>
+      <div><span class="chip">${level}</span><p style="margin:6px 0 0">أكملت <b>${correct} من 2</b> في اختبار الذاكرة.</p></div></div>
+    <h3 style="font-size:20px;margin-bottom:10px">خطتك المقترحة</h3>
+    <ul class="plan">
+      <li><span class="k">١</span><div>احفظ <b>${daily}</b> يوميًا.</div></li>
+      <li><span class="k">٢</span><div>راجع ما حفظته سابقًا <b>${rev}</b> يوميًا قبل الحفظ الجديد.</div></li>
+      <li><span class="k">٣</span><div>${tip}</div></li>
+    </ul>
+    <p style="margin:18px 0 12px">مصحف <b>تسهيل حفظ القرآن الكريم</b> مصمَّم ليطبّق هذه الخطة معك يومًا بيوم.</p>
+    <div class="nav"><button class="btn btn-ghost" id="redo">أعد الاختبار</button><a class="btn btn-gold" href="#product" style="text-decoration:none">اطلب المصحف</a></div></div>`;
+  document.getElementById('redo').onclick=()=>{for(const k in ans)delete ans[k];show(0)};
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+document.getElementById('startBtn').onclick=()=>{show(0);document.getElementById('quiz').scrollIntoView({behavior:'smooth'})};
+intro();
+
+document.getElementById('orderForm').addEventListener('submit',e=>{e.preventDefault();
+  const f=e.target,msg=document.getElementById('orderMsg');
+  if(!f.checkValidity()){f.reportValidity();return}
+  msg.hidden=false;msg.className='done';
+  msg.textContent='هذه نسخة تجريبية: الطلب لم يُرسل بعد. في النسخة النهائية يصلك الطلب مباشرة.';
+});
+</script>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#05211a}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 35%,#0d4a3c 0%,#073027 50%,#03140f 100%)}
+  .t{position:absolute;left:50px;right:50px;text-align:center;color:#f3e3b3}
+  .kufi{font-family:'Noto Kufi Arabic',sans-serif}
+  .naskh{font-family:'Noto Naskh Arabic',serif}
+  .amiri{font-family:'Amiri',serif}
+  .gold{background:linear-gradient(180deg,#fff2c4,#e8c46a 50%,#c39232);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #panel{position:absolute;left:40px;top:440px;width:1000px;height:1000px;border-radius:36px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 4px rgba(232,196,106,.55)}
+  .cam{position:absolute;left:0;top:0;width:2000px;height:2000px;transform-origin:0 0;will-change:transform,opacity}
+  .cam img{position:absolute;inset:0;width:2000px;height:2000px}
+  .cam svg{position:absolute;inset:0}
+  #title{top:110px}
+  #cap{top:1500px}
+  .card{position:absolute;left:90px;right:90px;top:1500px;height:300px;border-radius:30px;background:rgba(6,40,31,.92);
+    border:3px solid rgba(232,196,106,.8);display:flex;align-items:center;gap:36px;padding:0 44px;box-sizing:border-box;color:#f3e3b3}
+  .ring{width:200px;height:200px;border-radius:50%;flex:none;display:grid;place-items:center}
+  .ring span{width:164px;height:164px;border-radius:50%;background:#06281f;display:grid;place-items:center;font:700 70px 'Noto Kufi Arabic';color:#fff;font-variant-numeric:tabular-nums}
+  .chip{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:220px;height:200px;border-radius:28px;
+    background:rgba(6,40,31,.92);border:3px solid rgba(232,196,106,.75);color:#f3e3b3;font-family:'Noto Kufi Arabic'}
+  .chip b{font-size:76px;line-height:1.1;color:#fff}
+  .chip i{font-style:normal;font-size:34px}
+  .op{font:700 70px 'Noto Kufi Arabic';color:#e8c46a;margin:0 6px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="panel">
+    <div class="cam" id="L_covers"><img src="img/covers.jpg"></div>
+    <div class="cam" id="L_pages"><img src="img/pages.jpg"></div>
+    <div class="cam" id="L_frames"><img src="img/frames.jpg">
+      <svg width="2000" height="2000" viewBox="0 0 2000 2000">
+        <defs><filter id="glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <marker id="ah" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#ff5d73"/></marker></defs>
+        <polygon id="hA" points="1010,690 2000,250 2000,470 1070,880" fill="rgba(255,93,115,.10)" stroke="#ff5d73" stroke-width="12" stroke-linejoin="round" filter="url(#glow)"/>
+        <polygon id="hB" points="560,1130 2000,520 2000,760 600,1320" fill="rgba(70,170,255,.10)" stroke="#46aaff" stroke-width="12" stroke-linejoin="round" filter="url(#glow)"/>
+        <path id="arrow" d="M1150,900 C1080,980 1000,1040 940,1110" fill="none" stroke="#ff5d73" stroke-width="12" stroke-linecap="round" marker-end="url(#ah)"/>
+        <rect id="hT" x="290" y="450" width="620" height="640" rx="40" fill="none" stroke="#7ee2a8" stroke-width="12" filter="url(#glow)"/>
+        <g id="ticks" fill="none" stroke="#1f9d55" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+          <path id="k0" d="M385,712 L408,740 L448,684"/>
+          <path id="k1" d="M430,845 L453,873 L493,817"/>
+          <path id="k2" d="M497,968 L520,996 L560,940"/>
+        </g>
+      </svg>
+    </div>
+    <div class="cam" id="L_review"><img src="img/review.jpg"></div>
+    <div class="cam" id="L_index"><img src="img/index.jpg"></div>
+    <div class="cam" id="L_cover1"><img src="img/cover1.jpg"></div>
+  </div>
+
+  <div id="title" class="t"></div>
+  <div id="cap" class="t"></div>
+
+  <div class="card" id="cnt"><div class="ring" id="ring"><span id="num">0</span></div>
+    <div><div class="kufi" id="cntName" style="font-size:64px;font-weight:700;color:#fff">البناء</div>
+      <div class="kufi" id="cntSub" style="font-size:36px;color:#cfe8dc">15 مرة</div></div></div>
+  <div id="sum" class="t" style="top:1500px;display:flex;align-items:center;justify-content:center;left:0;right:0;direction:rtl">
+    <div class="chip"><b>15</b><i>البناء</i></div><span class="op">+</span>
+    <div class="chip"><b>20</b><i>التثبيت</i></div><span class="op">+</span>
+    <div class="chip"><b>15</b><i>الترسيخ</i></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const eBack=x=>{const c=1.70158,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const lerp=(a,b,k)=>a+(b-a)*k;
+const win=(t,a,b,fi=.45,fo=.4)=>Math.min(eOut(prog(t,a,a+fi)),1-eIO(prog(t,b-fo,b)));
+const PANEL=1000, DUR=45;
+
+// layer visibility windows [in, out]
+const LAYERS={covers:[0,4.6],pages:[4.4,9.4],frames:[9.2,33.4],review:[33.2,37.4],index:[37.2,40.6],cover1:[40.4,45]};
+// camera keyframes per layer: [t, cx, cy, zoom]
+const CAM={
+  covers:[[0,1000,1000,1.0],[4.6,1000,950,1.15]],
+  pages:[[4.4,1000,1000,1.05],[9.4,850,900,1.3]],
+  frames:[[9.2,1000,1000,1.0],[10.4,1000,1000,1.0],[11.6,1480,600,2.0],[13.9,1520,580,2.05],[15.0,1250,950,1.9],[16.9,1230,960,1.95],[17.9,1250,790,1.35],[20.0,1250,800,1.38],[21.2,600,770,2.35],[33.4,600,770,2.45]],
+  review:[[33.2,1100,900,1.15],[37.4,1150,850,1.35]],
+  index:[[37.2,1000,950,1.15],[40.6,1050,900,1.35]],
+  cover1:[[40.4,1000,1000,1.25],[45,1000,1000,1.05]],
+};
+function camAt(keys,t){
+  if(t<=keys[0][0])return keys[0];
+  for(let i=1;i<keys.length;i++){if(t<=keys[i][0]){const a=keys[i-1],b=keys[i],k=eIO(prog(t,a[0],b[0]));return [t,lerp(a[1],b[1],k),lerp(a[2],b[2],k),lerp(a[3],b[3],k)]}}
+  return keys[keys.length-1];
+}
+function dashLen(el){const L=el.getTotalLength();el.style.strokeDasharray=L;return L}
+const LA=dashLen($('hA')),LB=dashLen($('hB')),LR=dashLen($('arrow')),LT=dashLen($('hT'));
+const LK=[0,1,2].map(i=>dashLen($('k'+i)));
+function draw(el,L,k){el.style.strokeDashoffset=(L*(1-k)).toFixed(1)}
+
+// text scenes: [in,out,titleHTML,captionHTML]
+const TXT=[
+ [0.2,4.5,'<div class="amiri gold" style="font-size:84px;font-weight:700;line-height:1.25">المرشد المعين</div><div class="naskh" style="font-size:46px;margin-top:6px">في تسهيل حفظ القرآن الكريم</div>',
+          '<div class="kufi" style="font-size:44px;line-height:1.7">جزءان · 60 حزبًا<br><span style="color:#e8c46a">رواية ورش عن نافع</span></div>'],
+ [4.6,9.3,'<div class="kufi" style="font-size:58px;font-weight:700">الفكرة</div><div class="naskh" style="font-size:44px;margin-top:10px;color:#cfe8dc">كل صفحة مقسّمة إلى إطارات صغيرة ملوّنة</div>',
+          '<div class="kufi" style="font-size:52px;font-weight:700;line-height:1.5">لا تحفظ صفحة…<br><span class="gold">احفظ إطارًا</span></div>'],
+ [9.4,14.0,'<div class="kufi" style="font-size:56px;font-weight:700">إطارات مترابطة</div><div class="naskh" style="font-size:40px;margin-top:10px;color:#cfe8dc">انظر إلى السطر الملوّن</div>',
+          '<div class="kufi" style="font-size:50px;font-weight:700;line-height:1.5"><span style="color:#ff8c9c">آخر سطر</span> في الإطار…</div>'],
+ [14.0,17.8,'<div class="kufi" style="font-size:56px;font-weight:700">إطارات مترابطة</div><div class="naskh" style="font-size:40px;margin-top:10px;color:#cfe8dc">انظر إلى السطر الملوّن</div>',
+          '<div class="kufi" style="font-size:46px;font-weight:700;line-height:1.5">…يُعاد في <span style="color:#7cc4ff">أول الإطار التالي</span><br>بنفس اللون</div>'],
+ [17.8,20.6,'<div class="kufi" style="font-size:56px;font-weight:700">إطارات مترابطة</div>',
+          '<div class="kufi" style="font-size:48px;font-weight:700;line-height:1.5">فلا ينقطع الحفظ<br><span class="gold">ولا تضيع الآية بين إطارين</span></div>'],
+ [20.6,33.3,'<div class="kufi" style="font-size:56px;font-weight:700">طريقة التكرار</div><div class="naskh" style="font-size:42px;margin-top:10px;color:#cfe8dc">بجانب كل إطار: ثلاث مراحل</div>',''],
+ [33.4,37.3,'<div class="kufi" style="font-size:56px;font-weight:700">مراجعة منظّمة</div>',
+          '<div class="kufi" style="font-size:42px;line-height:1.75">يومية · كل 3 أيام<br>عند ختم السورة · دائمة</div>'],
+ [37.4,40.5,'<div class="kufi" style="font-size:56px;font-weight:700">فهرس الحفظ</div>',
+          '<div class="kufi" style="font-size:42px;line-height:1.7">لكل سورة: عدد الإطارات<br>و<span style="color:#e8c46a">الأيام اللازمة لحفظها</span></div>'],
+ [40.6,45,'<div class="amiri gold" style="font-size:80px;font-weight:700;line-height:1.25">المرشد المعين</div><div class="naskh" style="font-size:44px;margin-top:6px">في تسهيل حفظ القرآن الكريم</div>',
+          '<div class="kufi" style="font-size:60px;font-weight:700;color:#fff">اطلب نسختك الآن</div><div class="kufi" style="font-size:38px;color:#e8c46a;margin-top:8px">الجزء الأول · الجزء الثاني</div>'],
+];
+let curT=-1,curC=-1;
+const COUNTS=[[21.6,24.6,'البناء',15],[24.6,27.6,'التثبيت',20],[27.6,30.6,'الترسيخ',15]];
+
+window.render=function(t){
+  // layers
+  for(const [k,[a,b]] of Object.entries(LAYERS)){
+    const el=$('L_'+k),o=Math.min(eOut(prog(t,a,a+.4)),1-prog(t,b-.4,b));
+    el.style.opacity=o.toFixed(3); el.style.display=o<=0?'none':'block';
+    if(o>0){const [,cx,cy,z]=camAt(CAM[k],t);const s=PANEL/2000*z;
+      el.style.transform=`translate(${PANEL/2}px,${PANEL/2}px) scale(${s.toFixed(4)}) translate(${-cx.toFixed(1)}px,${-cy.toFixed(1)}px)`;}
+  }
+  // highlights on frames layer
+  draw($('hA'),LA,eIO(prog(t,11.7,12.7))); $('hA').style.opacity=(1-prog(t,20.2,20.8)).toFixed(2);
+  draw($('hB'),LB,eIO(prog(t,15.1,16.1))); $('hB').style.opacity=(1-prog(t,20.2,20.8)).toFixed(2);
+  draw($('arrow'),LR,eIO(prog(t,18.0,18.9))); $('arrow').style.opacity=(prog(t,17.98,18.05)*(1-prog(t,20.2,20.8))).toFixed(2);
+  draw($('hT'),LT,eIO(prog(t,20.9,21.7)));$('hT').style.opacity=t>20.9?1:0;
+  COUNTS.forEach((c,i)=>{const k=eOut(prog(t,c[1]-.45,c[1]-.05));draw($('k'+i),LK[i],k);$('k'+i).style.opacity=k>0.02?1:0;});
+  // texts
+  const ti=TXT.findIndex(x=>t>=x[0]&&t<x[1]);
+  if(ti!==curT){curT=ti;$('title').innerHTML=ti<0?'':TXT[ti][2];$('cap').innerHTML=ti<0?'':TXT[ti][3]}
+  if(ti>=0){const [a,b]=TXT[ti];const w=win(t,a,b,.4,.3);
+    $('title').style.opacity=w;$('title').style.transform=`translateY(${((1-eOut(prog(t,a,a+.5)))*-30).toFixed(1)}px)`;
+    const wc=Math.min(eOut(prog(t,a+.25,a+.7)),1-eIO(prog(t,b-.3,b)));
+    $('cap').style.opacity=wc;$('cap').style.transform=`translateY(${((1-eOut(prog(t,a+.25,a+.75)))*30).toFixed(1)}px) scale(${(.94+.06*eBack(prog(t,a+.25,a+.8))).toFixed(3)})`;}
+  // counters
+  const ci=COUNTS.findIndex(c=>t>=c[0]&&t<c[1]);const card=$('cnt');
+  if(ci>=0){const [a,b,name,n]=COUNTS[ci];const k=prog(t,a+.3,b-.6);const v=Math.round(eIO(k)*n);
+    $('num').textContent=v;$('cntName').textContent=name;$('cntSub').textContent=n+' مرة'+(v===n?'  ✓':'');
+    $('ring').style.background=`conic-gradient(#e8c46a ${(v/n*360).toFixed(1)}deg, rgba(255,255,255,.15) 0)`;
+    card.style.opacity=Math.min(eOut(prog(t,a,a+.3)),ci===2?1-prog(t,b-.2,b):1).toFixed(3);
+    card.style.transform=`translateY(${((1-eOut(prog(t,a,a+.35)))*(ci===0?60:0)).toFixed(1)}px)`;
+  } else card.style.opacity=0;
+  const so=Math.min(eOut(prog(t,30.6,31.0)),1-prog(t,33.0,33.4));$('sum').style.opacity=so.toFixed(3);
+  $('sum').style.transform=`scale(${(.9+.1*eBack(prog(t,30.6,31.1))).toFixed(3)})`;
+  // "= 50" overlay via caption area when sum visible
+  if(t>=31.4&&t<33.4){$('title').innerHTML='<div class="kufi" style="font-size:96px;font-weight:700" ><span class="gold">50</span> تكرارًا</div><div class="kufi" style="font-size:42px;color:#cfe8dc;margin-top:6px">لكل إطار… ثم ضع العلامة ✓ وانتقل</div>';curT=-2;
+    $('title').style.opacity=eOut(prog(t,31.4,31.8));$('title').style.transform='none'}
+  $('stage').style.opacity=(eOut(prog(t,0,.3))*(1-prog(t,DUR-.35,DUR))).toFixed(3);
+};
+window.DUR=DUR;
+render(0);
+</script>
+</body>
+</html>

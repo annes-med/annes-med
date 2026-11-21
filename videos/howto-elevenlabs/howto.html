@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#06231c}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#0d4a3c,#062a21 55%,#03140f)}
+  .t{position:absolute;left:60px;right:60px;text-align:center;color:#f3e3b3;font-family:'Noto Kufi Arabic',sans-serif}
+  #step{top:90px}
+  #step .n{display:inline-grid;place-items:center;width:110px;height:110px;border-radius:50%;background:#e8c46a;color:#06231c;font-size:64px;font-weight:700}
+  #step .h{font-size:54px;font-weight:700;margin-top:18px;line-height:1.4}
+  #note{top:1640px;font-size:40px;line-height:1.6;color:#fff}
+  #approx{position:absolute;top:1560px;left:0;right:0;text-align:center;font:400 26px 'Noto Kufi Arabic';color:#9dc3b5}
+  /* phone */
+  #phone{position:absolute;left:250px;top:430px;width:580px;height:1100px;border-radius:70px;background:#0d0d0d;box-shadow:0 30px 90px rgba(0,0,0,.6),0 0 0 6px #2a2a2a}
+  #screen{position:absolute;left:22px;top:22px;right:22px;bottom:22px;border-radius:52px;overflow:hidden;background:#fff;direction:ltr;font-family:'DejaVu Sans',sans-serif}
+  .scr{position:absolute;inset:0;opacity:0}
+  .bar{height:110px;display:flex;align-items:center;padding:0 30px;gap:16px;font-size:30px;font-weight:700}
+  .row{margin:14px 28px;padding:22px 24px;border-radius:18px;background:#f2f4f3;font-size:26px;color:#222;display:flex;align-items:center;justify-content:space-between}
+  .btn{display:inline-block;padding:14px 26px;border-radius:14px;background:#111;color:#fff;font-size:26px;font-weight:700}
+  .field{margin:10px 28px 22px}
+  .field label{display:block;font-size:22px;color:#666;margin-bottom:8px}
+  .field div{border:3px solid #cfd8d4;border-radius:14px;padding:18px 18px;font-size:28px;color:#111;min-height:36px;font-family:'DejaVu Sans Mono',monospace}
+  .hl{outline:6px solid #e8c46a;outline-offset:4px;border-radius:14px}
+  #finger{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(232,196,106,.55);border:5px solid #e8c46a;transform:translate(-50%,-50%);pointer-events:none}
+  #ring{position:absolute;width:90px;height:90px;border-radius:50%;border:5px solid #e8c46a;transform:translate(-50%,-50%)}
+  #warn{position:absolute;left:90px;right:90px;top:620px;padding:60px 40px;border-radius:40px;background:rgba(180,68,47,.18);border:4px solid #ec7a63;text-align:center;color:#fff;font-family:'Noto Kufi Arabic';opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="step" class="t"></div>
+
+  <div id="phone"><div id="screen">
+    <!-- S1: ElevenLabs -->
+    <div class="scr" id="s1">
+      <div class="bar" style="border-bottom:2px solid #eee"><span style="font-size:34px">IIElevenLabs</span><span style="flex:1"></span><span id="avatar" style="width:64px;height:64px;border-radius:50%;background:#7c5cff;color:#fff;display:grid;place-items:center">M</span></div>
+      <div id="menu" style="position:absolute;right:26px;top:110px;width:330px;background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.2);opacity:0">
+        <div class="row" style="background:#fff">Profile</div><div class="row" id="apikeys" style="background:#fff">API Keys</div><div class="row" style="background:#fff">Settings</div></div>
+      <div id="keys" style="opacity:0;position:absolute;top:120px;left:0;right:0">
+        <div style="font-size:34px;font-weight:700;margin:20px 30px">API Keys</div>
+        <div class="row"><span>sk_••••••••••3f9a</span><span class="btn" id="copy">Copy</span></div>
+        <div id="copied" style="margin:6px 30px;font-size:26px;color:#1f8a5b;opacity:0">✓ Copied</div>
+      </div>
+    </div>
+    <!-- S2: Claude session -->
+    <div class="scr" id="s2" style="background:#f7f5f0">
+      <div class="bar" style="background:#fff;border-bottom:2px solid #e6e2d8;font-size:26px"><span>☰</span><span id="envbtn" style="padding:10px 18px;border-radius:14px;background:#efe9dc">annes-med ▾</span></div>
+      <div id="envmenu" style="position:absolute;left:70px;top:110px;width:330px;background:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.2);opacity:0">
+        <div class="row" style="background:#fff">annes-med ✓</div><div class="row" id="edit" style="background:#fff">Edit</div></div>
+      <div style="margin:240px 30px 0;font-size:24px;color:#888">… المحادثة …</div>
+    </div>
+    <!-- S3: Network secrets form -->
+    <div class="scr" id="s3">
+      <div class="bar" style="border-bottom:2px solid #eee;font-size:28px">Edit environment</div>
+      <div class="row" id="secrets" style="font-weight:700">Network secrets <span class="btn" id="add">+ Add</span></div>
+      <div id="form" style="opacity:0">
+        <div class="field"><label>Host</label><div id="fHost"></div></div>
+        <div class="field"><label>Header</label><div id="fHead"></div></div>
+        <div class="field"><label>Value</label><div id="fVal"></div></div>
+        <div style="margin:20px 28px"><span class="btn" id="save" style="background:#0d4a3c">Save</span><span id="saved" style="margin-left:20px;font-size:28px;color:#1f8a5b;opacity:0">✓ Saved</span></div>
+      </div>
+    </div>
+    <div id="ring"></div><div id="finger"></div>
+  </div></div>
+
+  <div id="approx">الشاشات مرسومة بالتقريب، الشكل الحقيقي ممكن يختلف شوية</div>
+  <div id="note" class="t"></div>
+  <div id="warn"><div style="font-size:120px">⚠️</div><div style="font-size:60px;font-weight:700;line-height:1.5">المفتاح<br>ما تبعثوش في الميساجات</div><div style="font-size:40px;margin-top:30px;color:#f3e3b3">حطّو غير في Network secrets</div></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eOut=x=>1-Math.pow(1-x,3),eIO=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const lerp=(a,b,k)=>a+(b-a)*k;
+const DUR=38;
+const STEPS=[
+ [0,4,'','<div style="font-size:84px;font-weight:700;color:#e8c46a;margin-top:200px;line-height:1.4">كيفاش تربط<br>ElevenLabs</div><div style="font-size:52px;margin-top:30px">في 4 خطوات</div>',''],
+ [4,13,'1','<div class="h">جيب المفتاح من ElevenLabs</div>','ادخل <b>elevenlabs.io</b><br>Profile ← <b>API Keys</b> ← <b>Copy</b>'],
+ [13,20,'2','<div class="h">افتح إعدادات البيئة</div>','في Claude، اضغط على <b>annes-med</b> فوق<br>ومن بعد <b>Edit</b>'],
+ [20,31,'3','<div class="h">زيد المفتاح في Network secrets</div>','<b>+ Add</b> وعمّر:<br><span style="direction:ltr;unicode-bidi:embed">api.elevenlabs.io · xi-api-key · المفتاح</span>'],
+ [31,34.5,'4','<div class="h">احفظ وقولّي «زدتو»</div>','اضغط <b>Save</b>، ومن بعد ابعثلي <b>«زدتو»</b>'],
+ [34.5,38,'','',''],
+];
+// finger path keyframes [t, x, y, tap]  (coords inside screen: 536x1056)
+const F=[[4.6,300,700,0],[6.0,470,55,1],[7.4,200,200,1],[9.6,440,215,1],[12.6,440,215,0],
+         [13.4,250,600,0],[14.6,160,55,1],[16.6,140,195,1],[19.6,140,195,0],
+         [20.4,300,700,0],[21.6,440,165,1],[30.4,440,165,0],[31.4,90,575,1],[34.0,90,575,0]];
+function finger(t){let k=F[0];for(let i=1;i<F.length;i++){if(t<F[i][0]){const a=F[i-1],b=F[i],p=eIO(prog(t,a[0],b[0]));return[lerp(a[1],b[1],p),lerp(a[2],b[2],p),b]} k=F[i]}return[k[1],k[2],k]}
+function typed(el,text,t,a,b){const n=Math.round(prog(t,a,b)*text.length);el.textContent=text.slice(0,n)+(t>a&&t<b+.3?'|':'')}
+let cur=-1;
+window.render=function(t){
+  const si=STEPS.findIndex(s=>t>=s[0]&&t<s[1]);
+  if(si!==cur){cur=si;const s=STEPS[si]||STEPS[0];
+    $('step').innerHTML=(s[2]?`<div class="n">${s[2]}</div>`:'')+s[3];$('note').innerHTML=s[4];}
+  const s=STEPS[si]||STEPS[0];const w=Math.min(eOut(prog(t,s[0],s[0]+.5)),1-prog(t,s[1]-.3,s[1]));
+  $('step').style.opacity=w;$('note').style.opacity=Math.min(eOut(prog(t,s[0]+.4,s[0]+.9)),1-prog(t,s[1]-.3,s[1]));
+  // phone visibility
+  const ph=Math.min(eOut(prog(t,3.6,4.2)),1-prog(t,34.2,34.6));$('phone').style.opacity=ph;$('approx').style.opacity=ph;
+  $('phone').style.transform=`translateY(${(1-eOut(prog(t,3.6,4.3)))*80}px)`;
+  // screens
+  const sc={s1:[4,13],s2:[13,20],s3:[20,34.5]};
+  for(const k in sc){const [a,b]=sc[k];$(k).style.opacity=Math.min(prog(t,a,a+.3),1-prog(t,b-.2,b));}
+  // S1 details
+  $('menu').style.opacity=(t>6.2&&t<7.7)?1:0;
+  $('keys').style.opacity=t>=7.7?1:0;
+  $('copied').style.opacity=t>9.9?1:0;
+  $('apikeys').classList.toggle('hl',t>7.0&&t<7.7);
+  $('copy').classList.toggle('hl',t>9.4&&t<10.4);
+  // S2
+  $('envbtn').classList.toggle('hl',t>14.4&&t<15.2);
+  $('envmenu').style.opacity=(t>14.9&&t<17.2)?1:0;
+  $('edit').classList.toggle('hl',t>16.3&&t<17.2);
+  // S3
+  $('form').style.opacity=t>22?1:0;
+  $('add').classList.toggle('hl',t>21.3&&t<22.2);
+  typed($('fHost'),'api.elevenlabs.io',t,22.6,24.8);
+  typed($('fHead'),'xi-api-key',t,25.2,26.8);
+  typed($('fVal'),'••••••••••••••',t,27.2,29.2);
+  $('save').classList.toggle('hl',t>31.0&&t<32.2);
+  $('saved').style.opacity=t>31.6?1:0;
+  // finger
+  const [fx,fy,k]=finger(t);const tapAt=k[0];const tp=k[3]?Math.max(0,1-Math.abs(t-tapAt)/0.35):0;
+  $('finger').style.left=fx+'px';$('finger').style.top=fy+'px';$('finger').style.opacity=(t>4.4&&t<34)?1:0;
+  $('finger').style.transform=`translate(-50%,-50%) scale(${1-0.25*tp})`;
+  $('ring').style.left=fx+'px';$('ring').style.top=fy+'px';$('ring').style.opacity=tp*0.9;
+  $('ring').style.transform=`translate(-50%,-50%) scale(${1+1.2*(1-tp)})`;
+  // warning
+  $('warn').style.opacity=Math.min(eOut(prog(t,34.6,35.2)),1-prog(t,37.6,38));
+  $('warn').style.transform=`scale(${0.9+0.1*eOut(prog(t,34.6,35.3))})`;
+  $('stage').style.opacity=eOut(prog(t,0,.3))*(1-prog(t,37.7,38));
+};
+render(0);
+</script>
+</body>
+</html>
